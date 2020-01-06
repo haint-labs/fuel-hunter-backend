@@ -14,7 +14,7 @@ group = "fuel.hunter"
 version = "0.0.1-SNAPSHOT"
 
 application {
-    mainClassName = "fuel.hunter.FuelHunterServerKt"
+    mainClassName = "fuel.hunter.ServerKt"
 }
 
 repositories {
