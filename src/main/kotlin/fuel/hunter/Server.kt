@@ -1,9 +1,9 @@
 package fuel.hunter
 
 import fuel.hunter.dao.InMemorySnapshotDao
+import fuel.hunter.grpc.SnapshotGrpc
 import fuel.hunter.scrapers.internal.NesteScraper
 import fuel.hunter.scrapers.internal.OfflineDocumentProvider
-import fuel.hunter.grpc.SnapshotGrpc
 import fuel.hunter.service.launchScrappers
 import fuel.hunter.service.launchStorage
 import io.grpc.ServerBuilder
@@ -13,12 +13,12 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
-fun main() {
+fun main(args: Array<String>) {
+    val config = getConfiguration(args.firstOrNull())
+
     val documentProvider = OfflineDocumentProvider()
     val scrapers = mapOf(
-        "https://www.neste.lv/lv/content/degvielas-cenas" to NesteScraper(),
-        "https://www.neste.lv/lv/content/degvielas-cenas1" to NesteScraper(),
-        "https://www.neste.lv/lv/content/degvielas-cenas2" to NesteScraper()
+        "https://www.neste.lv/lv/content/degvielas-cenas" to NesteScraper()
     )
 
     val memory = mutableListOf<Snapshot>()
@@ -32,7 +32,8 @@ fun main() {
     val snapshotDao = InMemorySnapshotDao(memory)
     val grpcService = SnapshotGrpc(snapshotDao)
 
-    ServerBuilder.forPort(50051)
+    println("[SERVER] Starting - port: ${config.port}...")
+    ServerBuilder.forPort(config.port)
         .addService(grpcService)
         .build()
         .start()
