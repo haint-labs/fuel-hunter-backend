@@ -1,5 +1,11 @@
+FROM gradle:6.0.1-jdk11 as cache
+RUN mkdir -p /gradle_cache
+ENV GRADLE_USER_HOME /gradle_cache
+COPY build.gradle.kts .
+RUN gradle clean
+
 FROM gradle:6.0.1-jdk11 as builder
-USER root
+COPY --from=cache /gradle_cache /home/gradle/.gradle
 RUN mkdir -p /app
 COPY . /app
 WORKDIR /app
