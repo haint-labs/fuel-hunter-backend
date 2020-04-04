@@ -1,11 +1,10 @@
 import com.google.protobuf.gradle.*
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     idea
     application
     java
-    kotlin("jvm") version "1.3.60"
+    kotlin("jvm") version "1.3.70"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("com.google.protobuf") version "0.8.10"
 }
@@ -25,19 +24,18 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
+    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
 
 
-    implementation("org.jsoup:jsoup:1.11.3")
+    implementation("org.jsoup:jsoup:1.13.1")
 
     implementation("com.google.protobuf:protobuf-java:3.11.1")
     implementation("io.grpc:grpc-stub:1.25.0")
     implementation("io.grpc:grpc-protobuf:1.25.0")
+    implementation("javax.annotation:javax.annotation-api:1.3.1")
+
     runtimeOnly("io.grpc:grpc-netty-shaded:1.25.0")
-    if (JavaVersion.current().isJava9Compatible) {
-        implementation("javax.annotation:javax.annotation-api:1.3.1")
-    }
 
     protobuf("com.github.haint-labs:fuel-hunter-proto:master-SNAPSHOT")
 }
@@ -60,18 +58,4 @@ protobuf {
             }
         }
     }
-}
-
-tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
 }
