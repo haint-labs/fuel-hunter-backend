@@ -12,6 +12,7 @@ class OfflineDocumentProvider : DocumentProvider {
     override fun getDocument(uri: String): Document {
         val resourceName = when {
             uri.contains("neste") -> "snapshots/offline/neste.htm"
+            uri.contains("circlek") -> "snapshots/offline/circlek.htm"
             else -> throw IllegalArgumentException("Unknown page provided")
         }
 
