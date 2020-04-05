@@ -13,6 +13,7 @@ class OfflineDocumentProvider : DocumentProvider {
         val resourceName = when {
             uri.contains("neste") -> "snapshots/offline/neste.htm"
             uri.contains("circlek") -> "snapshots/offline/circlek.htm"
+            uri.contains("laacz") -> "snapshots/offline/laacz.html"
             else -> throw IllegalArgumentException("Unknown page provided")
         }
 

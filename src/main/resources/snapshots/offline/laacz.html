@@ -1,0 +1,253 @@
+
+<!doctype html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="sortable.css">
+    <title>Degvielas cenas</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            line-height: 1.5;
+            font-family: sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        h2 {
+            font-size: .8rem;
+            font-weight: normal;
+            text-align: center;
+            color: grey;
+        }
+
+        #container {
+            margin: 0 auto;
+            max-width: 95%;
+            width: 50rem;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            /*width: 100%;*/
+        }
+
+        thead tr th {
+            border-bottom: 2px solid #ccc;
+        }
+
+        td, th {
+            padding: .25rem .5rem;
+            vertical-align: top;
+        }
+
+        tbody th {
+            text-align: left;
+        }
+
+        tbody th, tbody td {
+            border-bottom: 1px solid #dadada;
+        }
+
+        .meta {
+            font-size: 80%;
+            color: silver;
+        }
+
+        th small {
+            font-weight: normal;
+            font-size: .7rem;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: .8rem;
+            padding: .1rem .25rem;
+            border-radius: .25rem;
+            margin: 0;
+        }
+
+        .tag:link,
+        .tag:visited {
+            color: navy;
+        }
+
+        a.tag:hover, a.tag:active, a.tag.current:link, a.tag.current:visited {
+            background-color: #38c172;
+            color: #fff;
+        }
+
+        .ts {
+            font-size: smaller;
+            color: silver;
+            line-height: 1;
+        }
+
+        .today {
+            display: inline-block;
+            padding: .25rem .25rem;
+            border-radius: .25rem;
+            background-color: rgba(0, 128, 0, .5);
+            color: #fff;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <h1>Degvielas cenas</h1>
+    <h2>238 DUS. Rādu cenas, kuras <em>Waze</em> ievadītas pēdējo 24h laikā, informācija atjaunojas ne biežāk kā reizi 3 stundās.</h2>
+    <p>
+        <a href="?" class="tag current"><strong>Visi tīkli</strong></a>
+        <a class="tag" href="?brand=Astarte%20Nafta">Astarte Nafta</a>
+        <a class="tag" href="?brand=Circle%20K">Circle K</a>
+        <a class="tag" href="?brand=DINAZ">DINAZ</a>
+        <a class="tag" href="?brand=ES%20g%C4%81ze">ES gāze</a>
+        <a class="tag" href="?brand=Geksans">Geksans</a>
+        <a class="tag" href="?brand=Gotika%20Auto">Gotika Auto</a>
+        <a class="tag" href="?brand=KOOL">KOOL</a>
+        <a class="tag" href="?brand=Kings">Kings</a>
+        <a class="tag" href="?brand=Latvijas%20Nafta">Latvijas Nafta</a>
+        <a class="tag" href="?brand=Latvijas%20Prop%C4%81na%20G%C4%81ze">Latvijas Propāna Gāze</a>
+        <a class="tag" href="?brand=MC">MC</a>
+        <a class="tag" href="?brand=Metro">Metro</a>
+        <a class="tag" href="?brand=Neste">Neste</a>
+        <a class="tag" href="?brand=Straujup%C4%ABte">Straujupīte</a>
+        <a class="tag" href="?brand=Viada">Viada</a>
+        <a class="tag" href="?brand=Vir%C5%A1i">Virši</a>
+    </p>
+    <p>
+        <a href="?" class="tag current"><strong>Visas pilsētas</strong></a>
+        <a class="tag" href="?city=Aizpute">Aizpute</a>
+        <a class="tag" href="?city=Aizupes%2C%20T%C4%ABn%C5%AB%C5%BEu%20pag.">Aizupes, Tīnūžu pag.</a>
+        <a class="tag" href="?city=Al%C5%ABksne">Alūksne</a>
+        <a class="tag" href="?city=Amatnieki">Amatnieki</a>
+        <a class="tag" href="?city=Annenieki">Annenieki</a>
+        <a class="tag" href="?city=Aug%C5%A1l%C4%ABgatne">Augšlīgatne</a>
+        <a class="tag" href="?city=Ber%C4%A3i">Berģi</a>
+        <a class="tag" href="?city=Broc%C4%93ni">Brocēni</a>
+        <a class="tag" href="?city=B%C4%93rzkrogs">Bērzkrogs</a>
+        <a class="tag" href="?city=Dobele">Dobele</a>
+        <a class="tag" href="?city=Dreili%C5%86i">Dreiliņi</a>
+        <a class="tag" href="?city=Dzelmes">Dzelmes</a>
+        <a class="tag" href="?city=Engure">Engure</a>
+        <a class="tag" href="?city=Grobi%C5%86a">Grobiņa</a>
+        <a class="tag" href="?city=Iecava">Iecava</a>
+        <a class="tag" href="?city=Ieri%C4%B7i">Ieriķi</a>
+        <a class="tag" href="?city=Jelgava">Jelgava</a>
+        <a class="tag" href="?city=J%C5%ABrmala">Jūrmala</a>
+        <a class="tag" href="?city=Koknese">Koknese</a>
+        <a class="tag" href="?city=Krustkalni">Krustkalni</a>
+        <a class="tag" href="?city=Kuld%C4%ABga">Kuldīga</a>
+        <a class="tag" href="?city=Lapme%C5%BEciems">Lapmežciems</a>
+        <a class="tag" href="?city=Lielv%C4%81rde">Lielvārde</a>
+        <a class="tag" href="?city=Liep%C4%81ja">Liepāja</a>
+        <a class="tag" href="?city=Limba%C5%BEi">Limbaži</a>
+        <a class="tag" href="?city=M%C4%81rupe">Mārupe</a>
+        <a class="tag" href="?city=M%C4%93rsrags">Mērsrags</a>
+        <a class="tag" href="?city=N%C4%ABcgales%20mui%C5%BEa">Nīcgales muiža</a>
+        <a class="tag" href="?city=Ogre">Ogre</a>
+        <a class="tag" href="?city=Pienava">Pienava</a>
+        <a class="tag" href="?city=Pi%C5%86%C4%B7i">Piņķi</a>
+        <a class="tag" href="?city=P%C5%ABre">Pūre</a>
+        <a class="tag" href="?city=Ragana">Ragana</a>
+        <a class="tag" href="?city=Rumbula">Rumbula</a>
+        <a class="tag" href="?city=R%C4%93zekne">Rēzekne</a>
+        <a class="tag" href="?city=R%C4%ABga">Rīga</a>
+        <a class="tag" href="?city=Salaspils">Salaspils</a>
+        <a class="tag" href="?city=Saldus">Saldus</a>
+        <a class="tag" href="?city=Sigulda">Sigulda</a>
+        <a class="tag" href="?city=Spilve">Spilve</a>
+        <a class="tag" href="?city=Stapri%C5%86i">Stapriņi</a>
+        <a class="tag" href="?city=Sun%C4%AB%C5%A1i%2C%20Garkalnes%20nov.">Sunīši, Garkalnes nov.</a>
+        <a class="tag" href="?city=Taurene">Taurene</a>
+        <a class="tag" href="?city=Tirza">Tirza</a>
+        <a class="tag" href="?city=Tukums">Tukums</a>
+        <a class="tag" href="?city=T%C4%ABre%C4%BCi%2C%20Valgundes%20pag.">Tīreļi, Valgundes pag.</a>
+        <a class="tag" href="?city=Vecpiebalga">Vecpiebalga</a>
+        <a class="tag" href="?city=Zemkop%C4%ABbas%20instit%C5%ABts">Zemkopības institūts</a>
+        <a class="tag" href="?city=Z%C4%ABl%C4%81ni">Zīlāni</a>
+        <a class="tag" href="?city=%C4%80da%C5%BEi">Ādaži</a>
+        <a class="tag" href="?city=%C4%B6egums">Ķegums</a>
+        <a class="tag" href="?city=%C4%B6ekava">Ķekava</a>
+    </p>
+    <table class="sortable">
+        <thead>
+        <tr>
+            <th>Vieta</th>
+            <th>diesel</th>
+            <th>98</th>
+            <th>lpg</th>
+            <th>95</th>
+            <!--            <th>Pēdējās izmaiņas</th>-->
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Latvijas nafta<small><br>
+                Grantskalni, Skrundas pag.                        <br><span class="ts">2020-04-05 21:08:06                            <span class="today">šodien</span></span>
+            </small></td>
+            <td data-sort="1.077">1.077</td>
+            <td data-sort="1.367">1.367</td>
+            <td data-sort="0.559">0.559</td>
+            <td data-sort="1.207">1.207</td>
+        </tr>
+        <tr>
+            <td>Neste Krasta<small><br>
+                Krasta iela 68, Rīga                        <br><span class="ts">2020-04-05 06:50:09                            <span class="today">šodien</span></span>
+            </small></td>
+            <td data-sort="0.977">0.977</td>
+            <td data-sort="1.107">1.107</td>
+            <td data-sort="-">-</td>
+            <td data-sort="1.067">1.067</td>
+        </tr>
+        <tr>
+            <td>Neste Brīvības<small><br>
+                Brīvības gatve 253, Rīga                        <br><span class="ts">2020-04-05 14:02:52                            <span class="today">šodien</span></span>
+            </small></td>
+            <td data-sort="1.037">1.037</td>
+            <td data-sort="1.137">1.137</td>
+            <td data-sort="-">-</td>
+            <td data-sort="1.097">1.097</td>
+        </tr>
+        <tr>
+            <td>Circle K Saldus<small><br>
+                Apvedceļš 11, Saldus                        <br><span class="ts">2020-04-05 10:24:38                            <span class="today">šodien</span></span>
+            </small></td>
+            <td data-sort="1.004">1.004</td>
+            <td data-sort="-">-</td>
+            <td data-sort="0.495">0.495</td>
+            <td data-sort="1.104">1.104</td>
+        </tr>
+        <tr>
+            <td>Circle K Ķekava<small><br>
+                Rīgas iela 107, Ķekava                        <br><span class="ts">2020-04-05 15:01:17                            <span class="today">šodien</span></span>
+            </small></td>
+            <td data-sort="1.004">1.004</td>
+            <td data-sort="1.175">1.175</td>
+            <td data-sort="0.545">0.545</td>
+            <td data-sort="1.104">1.104</td>
+        </tr>
+        <tr>
+            <td>Virši Babīte<small><br>
+                Viršvidi, Spilve                        <br><span class="ts">2020-04-05 12:08:11                            <span class="today">šodien</span></span>
+            </small></td>
+            <td data-sort="0.994">0.994</td>
+            <td data-sort="-">-</td>
+            <td data-sort="0.495">0.495</td>
+            <td data-sort="1.094">1.094</td>
+        </tr>
+        </tbody>
+    </table>
+    <script src="sortable.js"></script>
+</div>
+</body>
+</html>
