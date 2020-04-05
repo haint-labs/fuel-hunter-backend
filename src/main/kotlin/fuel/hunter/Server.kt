@@ -5,7 +5,6 @@ import fuel.hunter.grpc.SnapshotGrpc
 import fuel.hunter.scrapers.internal.CircleKScrapper
 import fuel.hunter.scrapers.internal.LaaczScraper
 import fuel.hunter.scrapers.internal.NesteScraper
-import fuel.hunter.scrapers.internal.OfflineDocumentProvider
 import fuel.hunter.service.launchScrappers
 import fuel.hunter.service.launchStorage
 import io.grpc.ServerBuilder
@@ -18,7 +17,7 @@ import kotlinx.coroutines.launch
 fun main(args: Array<String>) {
     val config = getConfiguration(args.firstOrNull())
 
-    val documentProvider = OfflineDocumentProvider()
+    val documentProvider = config.provider
     val scrapers = mapOf(
         "https://www.neste.lv/lv/content/degvielas-cenas" to NesteScraper(),
         "https://www.circlek.lv/lv_LV/pg1334072578525/private/Degviela/Cenas.html" to CircleKScrapper(),
