@@ -28,14 +28,14 @@ fun main(args: Array<String>) {
     val snapshots = Channel<Snapshot>(50)
 
     GlobalScope.launch {
-        launchScrappers(documentProvider, scrapers, snapshots)
+        launchScrappers(documentProvider, config.dataFeedRefreshInterval, scrapers, snapshots)
         launchStorage(snapshots, memory)
     }
 
     val snapshotDao = InMemorySnapshotDao(memory)
     val grpcService = SnapshotGrpc(snapshotDao)
 
-    println("[SERVER] Starting - port: ${config.port}...")
+    println("[SERVER] Starting with configuration - ${config}...")
     ServerBuilder.forPort(config.port)
         .addService(grpcService)
         .build()

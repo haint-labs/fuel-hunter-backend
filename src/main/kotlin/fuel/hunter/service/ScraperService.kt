@@ -14,6 +14,7 @@ import java.util.*
 @ExperimentalCoroutinesApi
 fun CoroutineScope.launchScrappers(
     documentProvider: DocumentProvider,
+    dataFeedRefreshInterval: Int,
     scrapers: Map<String, Scraper>,
     snapshots: SendChannel<Snapshot>
 ) = launch {
@@ -24,7 +25,8 @@ fun CoroutineScope.launchScrappers(
     while (!snapshots.isClosedForSend) {
         scrapers.entries.forEachIndexed { index, (url, scrapper) ->
             launch {
-                println("[SCRAPPERS] Hunting data ($index) - ${scrapper.javaClass.simpleName}")
+                val scrapperName = scrapper.javaClass.simpleName
+                println("[SCRAPPERS] Hunting data ($index) - $scrapperName")
 
                 val document = documentProvider.getDocument(url)
                 scrapper.scrape(document).collect {
@@ -34,7 +36,8 @@ fun CoroutineScope.launchScrappers(
             }
         }
 
-        val randomizedDelay = 5 * 10L + random.nextInt(100) * 100L
+        val randomizedDelay = dataFeedRefreshInterval + random.nextInt(100) * 100L
+        println("[SCRAPPERS] Suspending - wait time: $randomizedDelay")
         delay(randomizedDelay)
     }
 
