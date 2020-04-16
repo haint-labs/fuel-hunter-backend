@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
     )
 
     val memory = mutableListOf<Snapshot>()
-    val snapshots = Channel<Snapshot>(10000)
+    val snapshots = Channel<Snapshot>(100)
 
     GlobalScope.launch {
         launchScrappers(documentProvider, config.dataFeedRefreshInterval, scrapers, snapshots)
