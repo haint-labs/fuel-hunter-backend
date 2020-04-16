@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.util.*
 
 @ExperimentalCoroutinesApi
@@ -26,12 +27,18 @@ fun CoroutineScope.launchScrappers(
     while (!snapshots.isClosedForSend) {
         scrapers
             .entries
-            .map { (url, scrapper) ->
+            .mapNotNull { (url, scrapper) ->
                 val scrapperName = scrapper.javaClass.simpleName
                 println("[SCRAPPERS] Hunting data - $scrapperName")
 
-                val document = documentProvider.getDocument(url)
-                scrapper.scrape(document)
+                try {
+                    val document = documentProvider.getDocument(url)
+                    scrapper.scrape(document)
+                } catch (e: Exception) {
+                    println("[SCRAPPERS] Failed to get document - scraper: $scrapperName, url: $url")
+                    e.printStackTrace()
+                    null
+                }
             }
             .merge()
             .collect {
