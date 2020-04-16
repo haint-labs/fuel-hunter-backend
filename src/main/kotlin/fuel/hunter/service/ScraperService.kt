@@ -8,6 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -23,18 +24,20 @@ fun CoroutineScope.launchScrappers(
     val random = Random()
 
     while (!snapshots.isClosedForSend) {
-        scrapers.entries.forEachIndexed { index, (url, scrapper) ->
-            launch {
+        scrapers
+            .entries
+            .map { (url, scrapper) ->
                 val scrapperName = scrapper.javaClass.simpleName
-                println("[SCRAPPERS] Hunting data ($index) - $scrapperName")
+                println("[SCRAPPERS] Hunting data - $scrapperName")
 
                 val document = documentProvider.getDocument(url)
-                scrapper.scrape(document).collect {
-                    snapshots.send(it)
-                    println("[SCRAPPERS] Pushing new snapshot - ${it.name}, ${it.type}: ${it.price}")
-                }
+                scrapper.scrape(document)
             }
-        }
+            .merge()
+            .collect {
+                snapshots.send(it)
+                println("[SCRAPPERS] Pushing new snapshot - ${it.name}, ${it.type}: ${it.price}")
+            }
 
         val randomizedDelay = dataFeedRefreshInterval + random.nextInt(100) * 100L
         println("[SCRAPPERS] Suspending - wait time: $randomizedDelay")
