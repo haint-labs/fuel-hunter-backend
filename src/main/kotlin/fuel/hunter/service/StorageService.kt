@@ -10,12 +10,12 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 fun CoroutineScope.launchStorage(
     input: ReceiveChannel<Snapshot>,
-    items: MutableList<Snapshot>
+    items: MutableList<Snapshot>,
+    limit: Int = 10000
 ) = launch {
     println("[STORAGE] Started...")
 
     var index = 0
-    val limit = 100
 
     input.consumeEach {
         if (items.size < limit) {
