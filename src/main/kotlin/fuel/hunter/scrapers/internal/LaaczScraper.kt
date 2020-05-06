@@ -10,7 +10,7 @@ import org.jsoup.nodes.Element
 class LaaczScraper : Scraper {
     override fun scrape(document: Document): Flow<Snapshot> = flow {
         document.laaczSnapshotChunks.forEach {
-            val (addressElement, dieselElement, e98Element, gasElement, e95Element) = it
+            val (addressElement, dieselElement, e98Element, e95Element, gasElement) = it
 
             val addressParts = (addressElement.childNode(1) as Element)
                 .ownText()
