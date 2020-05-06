@@ -9,12 +9,14 @@ import org.jsoup.nodes.Element
 
 class LaaczScraper : Scraper {
     override fun scrape(document: Document): Flow<Snapshot> = flow {
-        document.laaczSnapshotChunks.forEach {
-            val (addressElement, dieselElement, e98Element, e95Element, gasElement) = it
+        document.laaczSnapshotChunks.forEach { chunk ->
+            val (addressElement, dieselElement, e98Element, e95Element, gasElement) = chunk
 
             val addressParts = (addressElement.childNode(1) as Element)
                 .ownText()
                 .split(", ")
+                .takeIf { it.size == 2 }
+                ?: return@forEach
 
             val fuelMap = mapOf(
                 "Diesel" to dieselElement,
