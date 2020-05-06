@@ -6,7 +6,7 @@ plugins {
     java
     kotlin("jvm") version "1.3.70"
     id("com.github.johnrengelman.shadow") version "5.2.0"
-    id("com.google.protobuf") version "0.8.10"
+    id("com.google.protobuf") version "0.8.12"
 }
 
 group = "fuel.hunter"
@@ -30,10 +30,10 @@ dependencies {
 
     implementation("org.jsoup:jsoup:1.13.1")
 
-    implementation("com.google.protobuf:protobuf-java:3.11.1")
-    implementation("io.grpc:grpc-netty-shaded:1.25.0")
-    implementation("io.grpc:grpc-protobuf:1.25.0")
-    implementation("io.grpc:grpc-stub:1.25.0")
+    implementation("com.google.protobuf:protobuf-java:3.11.4")
+    implementation("io.grpc:grpc-netty-shaded:1.29.0")
+    implementation("io.grpc:grpc-protobuf:1.29.0")
+    implementation("io.grpc:grpc-stub:1.29.0")
     implementation("io.grpc:grpc-kotlin-stub:0.1.1")
 
     implementation("javax.annotation:javax.annotation-api:1.3.1")
