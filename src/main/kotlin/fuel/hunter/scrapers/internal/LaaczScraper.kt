@@ -9,32 +9,36 @@ import org.jsoup.nodes.Element
 
 class LaaczScraper : Scraper {
     override fun scrape(document: Document): Flow<Snapshot> = flow {
-        document.laaczSnapshotChunks.forEach { chunk ->
-            val (addressElement, dieselElement, e98Element, e95Element, gasElement) = chunk
+        val fuelTypeMap = document
+            .select("table.sortable thead th")
+            .drop(1)
+            .withIndex()
+            .associateBy(
+                keySelector = { it.index },
+                valueTransform = { it.value.ownText() }
+            )
 
+        document.laaczSnapshotChunks.forEach { chunk ->
+            val addressElement = chunk.first()
             val addressParts = (addressElement.childNode(1) as Element)
                 .ownText()
                 .split(", ")
                 .takeIf { it.size == 2 }
                 ?: return@forEach
 
-            val fuelMap = mapOf(
-                "Diesel" to dieselElement,
-                "E95" to e95Element,
-                "E98" to e98Element,
-                "Gas" to gasElement
-            )
+            chunk
+                .drop(1)
+                .forEachIndexed { index, element ->
+                    element.takeIf { it.text() != "-" }
+                        ?: return@forEachIndexed
 
-            fuelMap
-                .filter { (_, value) -> value.text() != "-" }
-                .map { (fuelType, element) ->
                     emit(
                         snapshot {
                             provider = ""
                             name = addressElement.ownText()
                             address = addressParts[0]
                             city = addressParts[1]
-                            type = fuelType
+                            type = fuelTypeMap[index]
                             price = element.text().toFloat()
                         }
                     )
