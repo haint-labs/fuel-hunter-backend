@@ -9,12 +9,10 @@ import fuel.hunter.extensions.snapshotResponse
 import io.grpc.stub.StreamObserver
 
 class SnapshotGrpc(private val snapshotDao: SnapshotDao) : SnapshotServiceCoroutineImplBase() {
-    suspend fun getSnapshots(request: SnapshotQuery, observer: StreamObserver<SnapshotResponse>) {
+    override suspend fun getSnapshots(request: SnapshotQuery): SnapshotResponse {
         val snapshots = snapshotDao.getMatching(request)
-        val response = snapshotResponse {
+        return snapshotResponse {
             addAllSnapshots(snapshots)
         }
-
-        observer { emit(response) }
     }
 }
