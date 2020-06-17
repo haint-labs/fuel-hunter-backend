@@ -16,7 +16,7 @@ fun CoroutineScope.launchRestService(
     stations: MutableList<Station>,
     companies: MutableList<Company>
 ) = launch {
-    embeddedServer(Netty) {
+    embeddedServer(Netty, port = 8000) {
         install(StatusPages) {
             exception<Throwable> {
                 call.respond(mapOf("error" to (it.message ?: "ooups...")))
