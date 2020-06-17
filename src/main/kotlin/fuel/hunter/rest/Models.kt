@@ -1,0 +1,52 @@
+package fuel.hunter.rest
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+interface ItemsDTO<T> {
+    val items: MutableList<T>
+}
+
+@Serializable
+data class Company(
+    val name: String,
+    val order: Long,
+    val hidden: Boolean,
+    val description: Description,
+    val homepage: String,
+    val logo: Logo,
+    val largeLogo: Logo,
+    val mapLogo: Logo,
+    val mapGrayLogo: Logo
+)
+
+@Serializable
+data class Description(
+    val en: String,
+    val lv: String,
+    val ru: String,
+    val lg: String
+)
+
+@Serializable
+data class Logo(
+    @SerialName("2x") val x2: String,
+    @SerialName("3x") val x3: String
+)
+
+@Serializable
+data class CompaniesDTO(override val items: MutableList<Company>) : ItemsDTO<Company>
+
+@Serializable
+data class Station(
+    val id: Long,
+    val company: String,
+    val latitude: Double,
+    val longitude: Double,
+    val address: String,
+    val city: String,
+    val name: String
+)
+
+@Serializable
+data class StationsDTO(override val items: MutableList<Station>) : ItemsDTO<Station>

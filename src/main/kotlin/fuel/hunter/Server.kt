@@ -2,6 +2,9 @@ package fuel.hunter
 
 import fuel.hunter.dao.InMemorySnapshotDao
 import fuel.hunter.grpc.SnapshotGrpc
+import fuel.hunter.rest.Company
+import fuel.hunter.rest.Station
+import fuel.hunter.rest.launchRestService
 import fuel.hunter.scrapers.internal.CircleKScrapper
 import fuel.hunter.scrapers.internal.LaaczScraper
 import fuel.hunter.scrapers.internal.NesteScraper
@@ -24,12 +27,16 @@ fun main(args: Array<String>) {
         "https://laacz.lv/f/misc/gas-prices.php" to LaaczScraper()
     )
 
+    val stations = mutableListOf<Station>()
+    val companies = mutableListOf<Company>()
     val memory = mutableListOf<Snapshot>()
     val snapshots = Channel<Snapshot>(100)
 
     GlobalScope.launch {
         launchScrappers(documentProvider, config.dataFeedRefreshInterval, scrapers, snapshots)
         launchStorage(snapshots, memory)
+
+        launchRestService(stations, companies)
     }
 
     val snapshotDao = InMemorySnapshotDao(memory)
