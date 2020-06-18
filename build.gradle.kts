@@ -1,4 +1,5 @@
 import com.google.protobuf.gradle.*
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     idea
@@ -15,6 +16,12 @@ version = "0.0.1-SNAPSHOT"
 
 application {
     mainClassName = "fuel.hunter.ServerKt"
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 repositories {
@@ -42,6 +49,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization:1.3.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
 
+    implementation("org.litote.kmongo:kmongo-coroutine-serialization:4.0.2")
 
     protobuf("com.github.haint-labs:fuel-hunter-proto:master-SNAPSHOT")
 }

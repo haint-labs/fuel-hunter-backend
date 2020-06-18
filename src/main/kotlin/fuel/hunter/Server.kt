@@ -15,6 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import org.litote.kmongo.reactivestreams.KMongo
 
 @ExperimentalCoroutinesApi
 fun main(args: Array<String>) {
@@ -27,8 +28,8 @@ fun main(args: Array<String>) {
         "https://laacz.lv/f/misc/gas-prices.php" to LaaczScraper()
     )
 
-    val stations = mutableListOf<Station>()
-    val companies = mutableListOf<Company>()
+    val dbClient = KMongo.createClient(config.database)
+
     val memory = mutableListOf<Snapshot>()
     val snapshots = Channel<Snapshot>(100)
 
@@ -36,7 +37,7 @@ fun main(args: Array<String>) {
         launchScrappers(documentProvider, config.dataFeedRefreshInterval, scrapers, snapshots)
         launchStorage(snapshots, memory)
 
-        launchRestService(stations, companies)
+        launchRestService(dbClient)
     }
 
     val snapshotDao = InMemorySnapshotDao(memory)

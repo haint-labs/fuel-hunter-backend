@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 interface ItemsDTO<T> {
-    val items: MutableList<T>
+    val items: List<T>
 }
 
 @Serializable
@@ -35,7 +35,7 @@ data class Logo(
 )
 
 @Serializable
-data class CompaniesDTO(override val items: MutableList<Company>) : ItemsDTO<Company>
+data class CompaniesDTO(override val items: List<Company>) : ItemsDTO<Company>
 
 @Serializable
 data class Station(
@@ -49,4 +49,4 @@ data class Station(
 )
 
 @Serializable
-data class StationsDTO(override val items: MutableList<Station>) : ItemsDTO<Station>
+data class StationsDTO(override val items: List<Station>) : ItemsDTO<Station>

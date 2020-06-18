@@ -7,20 +7,27 @@ import java.util.*
 private const val PROP_PORT = "fuel.hunter.port"
 private const val PROP_DATA_FEED_REFRESH_INTERVAL = "fuel.hunter.dataFeedRefreshInterval"
 private const val PROP_PROVIDER = "fuel.hunter.provider"
+private const val PROP_DB_HOST = "fuel.hunter.database.host"
+private const val PROP_DB_PORT = "fuel.hunter.database.port"
 
 data class Configuration(
     val port: Int,
     val dataFeedRefreshInterval: Int,
-    val provider: DocumentProvider
+    val provider: DocumentProvider,
+    val database: String
 ) {
-    override fun toString() =
-        "port: $port, refresh interval: $dataFeedRefreshInterval, provider: ${provider.javaClass.simpleName}"
+    override fun toString() = "" +
+            "port: $port, " +
+            "refresh interval: $dataFeedRefreshInterval, " +
+            "provider: ${provider.javaClass.simpleName}, " +
+            "database: $database"
 }
 
 private val defaultConfiguration = Configuration(
     port = 50051,
     dataFeedRefreshInterval = 5 * 60 * 60 * 1000,
-    provider = OfflineDocumentProvider()
+    provider = OfflineDocumentProvider(),
+    database = "mongodb://162.243.16.251:27017"
 )
 
 fun getConfiguration(path: String? = null): Configuration {
@@ -31,9 +38,9 @@ fun getConfiguration(path: String? = null): Configuration {
     val stream = classLoader.getResourceAsStream(path)
         ?: return defaultConfiguration
 
-    return stream.use {
+    return stream.use { inputStream ->
         val properties = Properties()
-        properties.load(it)
+        properties.load(inputStream)
 
         val port = properties
             .getProperty(PROP_PORT, "${defaultConfiguration.port}")
@@ -53,6 +60,16 @@ fun getConfiguration(path: String? = null): Configuration {
             }
             ?: defaultConfiguration.provider
 
-        Configuration(port, dataFeedRefreshInterval, provider)
+        val database = listOf(PROP_DB_HOST, PROP_DB_PORT)
+            .mapNotNull(properties::getProperty)
+            .takeIf { it.size == 2 }
+            ?.joinToString(
+                prefix = "mongodb://",
+                separator = ":",
+                transform = properties::getProperty
+            )
+            ?: defaultConfiguration.database
+
+        Configuration(port, dataFeedRefreshInterval, provider, database)
     }
 }
