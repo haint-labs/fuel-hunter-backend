@@ -2,8 +2,6 @@ package fuel.hunter
 
 import fuel.hunter.dao.InMemorySnapshotDao
 import fuel.hunter.grpc.SnapshotGrpc
-import fuel.hunter.rest.Company
-import fuel.hunter.rest.Station
 import fuel.hunter.rest.launchRestService
 import fuel.hunter.scrapers.internal.CircleKScrapper
 import fuel.hunter.scrapers.internal.LaaczScraper

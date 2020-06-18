@@ -65,8 +65,7 @@ fun getConfiguration(path: String? = null): Configuration {
             .takeIf { it.size == 2 }
             ?.joinToString(
                 prefix = "mongodb://",
-                separator = ":",
-                transform = properties::getProperty
+                separator = ":"
             )
             ?: defaultConfiguration.database
 
