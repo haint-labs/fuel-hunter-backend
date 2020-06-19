@@ -60,15 +60,13 @@ fun getConfiguration(path: String? = null): Configuration {
             }
             ?: defaultConfiguration.provider
 
-        val database = listOf(PROP_DB_HOST, PROP_DB_PORT)
-            .mapNotNull(properties::getProperty)
-            .takeIf { it.size == 2 }
-            ?.joinToString(
-                prefix = "mongodb://",
-                separator = ":"
-            )
-            ?: defaultConfiguration.database
+        val dbHost = System.getenv("DB_HOST")
+            ?: properties.getProperty(PROP_DB_HOST)
+            ?: "localhost"
 
-        Configuration(port, dataFeedRefreshInterval, provider, database)
+        val dbPort = properties.getProperty(PROP_DB_PORT)?.toIntOrNull()
+            ?: 27017
+
+        Configuration(port, dataFeedRefreshInterval, provider, "mongodb://$dbHost:$dbPort")
     }
 }
