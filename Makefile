@@ -27,5 +27,10 @@ DEPLOY_SCRIPT = "\
 	docker pull $(ARTIFACT_NAME); \
 	docker kill $(NAME); \
 	docker rm $(NAME); \
-	docker run -d -p 50051:50051 -p 8000:8000 --name $(NAME) $(ARTIFACT_NAME); \
+	docker run -d \
+		-p 50051:50051 \
+		-p 8000:8000 \
+		--network fuel-hunter-network \
+		-e DB_HOST=fuel-hunter-mongo \
+		--name $(NAME) $(ARTIFACT_NAME); \
 "
