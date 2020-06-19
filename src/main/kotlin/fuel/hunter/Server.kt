@@ -2,6 +2,7 @@ package fuel.hunter
 
 import fuel.hunter.dao.InMemorySnapshotDao
 import fuel.hunter.grpc.SnapshotGrpc
+import fuel.hunter.grpc.StationGrpc
 import fuel.hunter.rest.launchRestService
 import fuel.hunter.scrapers.internal.CircleKScrapper
 import fuel.hunter.scrapers.internal.LaaczScraper
@@ -18,6 +19,7 @@ import org.litote.kmongo.reactivestreams.KMongo
 @ExperimentalCoroutinesApi
 fun main(args: Array<String>) {
     val config = getConfiguration(args.firstOrNull())
+    println("[SERVER] Starting with configuration - ${config}...")
 
     val documentProvider = config.provider
     val scrapers = mapOf(
@@ -39,11 +41,12 @@ fun main(args: Array<String>) {
     }
 
     val snapshotDao = InMemorySnapshotDao(memory)
-    val grpcService = SnapshotGrpc(snapshotDao)
+    val snapshotGrpcService = SnapshotGrpc(snapshotDao)
+    val stationsGrpcService = StationGrpc(dbClient)
 
-    println("[SERVER] Starting with configuration - ${config}...")
     ServerBuilder.forPort(config.port)
-        .addService(grpcService)
+        .addService(snapshotGrpcService)
+        .addService(stationsGrpcService)
         .build()
         .start()
         .awaitTermination()

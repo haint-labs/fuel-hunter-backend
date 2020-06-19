@@ -27,7 +27,7 @@ private val defaultConfiguration = Configuration(
     port = 50051,
     dataFeedRefreshInterval = 5 * 60 * 60 * 1000,
     provider = OfflineDocumentProvider(),
-    database = "mongodb://162.243.16.251:27017"
+    database = "mongodb://127.0.0.1:27017"
 )
 
 fun getConfiguration(path: String? = null): Configuration {

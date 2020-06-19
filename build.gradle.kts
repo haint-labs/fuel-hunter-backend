@@ -51,7 +51,7 @@ dependencies {
 
     implementation("org.litote.kmongo:kmongo-coroutine-serialization:4.0.2")
 
-    protobuf("com.github.haint-labs:fuel-hunter-proto:master-SNAPSHOT")
+    protobuf("com.github.haint-labs:fuel-hunter-proto:3ef0de6")
 }
 
 protobuf {
