@@ -50,6 +50,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
 
     implementation("org.litote.kmongo:kmongo-coroutine-serialization:4.0.2")
+    implementation("io.github.gaplotech:kotlin-protobuf-bson-codec:0.3.0")
 
     protobuf("com.github.haint-labs:fuel-hunter-proto:3ef0de6")
 }

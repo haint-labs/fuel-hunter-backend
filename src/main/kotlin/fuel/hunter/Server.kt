@@ -1,5 +1,7 @@
 package fuel.hunter
 
+import com.mongodb.MongoClientSettings
+import com.mongodb.reactivestreams.client.MongoClients
 import fuel.hunter.dao.InMemorySnapshotDao
 import fuel.hunter.grpc.SnapshotGrpc
 import fuel.hunter.grpc.StationGrpc
@@ -9,11 +11,13 @@ import fuel.hunter.scrapers.internal.LaaczScraper
 import fuel.hunter.scrapers.internal.NesteScraper
 import fuel.hunter.service.launchScrappers
 import fuel.hunter.service.launchStorage
+import io.github.gaplotech.PBCodecProvider
 import io.grpc.ServerBuilder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import org.bson.codecs.configuration.CodecRegistries
 import org.litote.kmongo.reactivestreams.KMongo
 
 @ExperimentalCoroutinesApi
@@ -28,7 +32,16 @@ fun main(args: Array<String>) {
         "https://laacz.lv/f/misc/gas-prices.php" to LaaczScraper()
     )
 
-    val dbClient = KMongo.createClient(config.database)
+    val dbSettings = MongoClientSettings
+        .builder()
+        .codecRegistry(
+            CodecRegistries.fromRegistries(
+                CodecRegistries.fromProviders(PBCodecProvider()),
+                MongoClients.getDefaultCodecRegistry()
+            )
+        )
+        .build()
+    val dbClient = KMongo.createClient(dbSettings)
 
     val memory = mutableListOf<Snapshot>()
     val snapshots = Channel<Snapshot>(100)

@@ -39,7 +39,7 @@ data class CompaniesDTO(override val items: List<Company>) : ItemsDTO<Company>
 
 @Serializable
 data class Station(
-    val id: Long,
+    val id: Double,
     val company: String,
     val latitude: Double,
     val longitude: Double,
