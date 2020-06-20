@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  fuel-hunter-mongo:
+    image: mongo:latest
+    container_name: fuel-hunter-mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_DATABASE=fuel-hunter
+
+  fuel-hunter:
+    image: sashjakk/fuel-hunter:0.0.4
+    container_name: fuel-hunter
+    ports:
+      - 50051:50051
+      - 8000:8000
+    environment:
+      - DB_HOST=fuel-hunter-mongo
+    depends_on:
+      - fuel-hunter-mongo
+    links:
+      - fuel-hunter-mongo
