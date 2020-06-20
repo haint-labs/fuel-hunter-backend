@@ -1,5 +1,6 @@
 package fuel.hunter
 
+import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.reactivestreams.client.MongoClients
 import fuel.hunter.dao.InMemorySnapshotDao
@@ -34,6 +35,7 @@ fun main(args: Array<String>) {
 
     val dbSettings = MongoClientSettings
         .builder()
+        .applyConnectionString(ConnectionString(config.database))
         .codecRegistry(
             CodecRegistries.fromRegistries(
                 CodecRegistries.fromProviders(PBCodecProvider()),
