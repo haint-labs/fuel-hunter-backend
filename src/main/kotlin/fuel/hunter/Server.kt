@@ -4,8 +4,8 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.reactivestreams.client.MongoClients
 import fuel.hunter.dao.InMemorySnapshotDao
-import fuel.hunter.grpc.SnapshotGrpc
-import fuel.hunter.grpc.StationGrpc
+import fuel.hunter.grpc.FuelHunterGrpc
+import fuel.hunter.models.Snapshot
 import fuel.hunter.rest.launchRestService
 import fuel.hunter.scrapers.internal.CircleKScrapper
 import fuel.hunter.scrapers.internal.LaaczScraper
@@ -56,12 +56,10 @@ fun main(args: Array<String>) {
     }
 
     val snapshotDao = InMemorySnapshotDao(memory)
-    val snapshotGrpcService = SnapshotGrpc(snapshotDao)
-    val stationsGrpcService = StationGrpc(dbClient)
+    val fuelHunter = FuelHunterGrpc(snapshotDao, dbClient)
 
     ServerBuilder.forPort(config.port)
-        .addService(snapshotGrpcService)
-        .addService(stationsGrpcService)
+        .addService(fuelHunter)
         .build()
         .start()
         .awaitTermination()

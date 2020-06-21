@@ -1,6 +1,6 @@
 package fuel.hunter.service
 
-import fuel.hunter.Snapshot
+import fuel.hunter.models.Snapshot
 import fuel.hunter.scrapers.DocumentProvider
 import fuel.hunter.scrapers.internal.Scraper
 import kotlinx.coroutines.CoroutineScope

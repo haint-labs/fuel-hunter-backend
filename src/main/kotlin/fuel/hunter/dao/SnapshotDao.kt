@@ -1,14 +1,13 @@
 package fuel.hunter.dao
 
-import fuel.hunter.Snapshot
-import fuel.hunter.SnapshotQuery
+import fuel.hunter.models.Snapshot
 
 interface SnapshotDao {
-    suspend fun getMatching(query: SnapshotQuery): List<Snapshot>
+    suspend fun getMatching(query: Snapshot.Query): List<Snapshot>
 }
 
 class InMemorySnapshotDao(private val items: List<Snapshot>) : SnapshotDao {
-    override suspend fun getMatching(query: SnapshotQuery): List<Snapshot> {
+    override suspend fun getMatching(query: Snapshot.Query): List<Snapshot> {
         return items
     }
 }

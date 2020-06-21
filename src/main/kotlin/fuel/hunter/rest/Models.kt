@@ -1,6 +1,5 @@
 package fuel.hunter.rest
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 interface ItemsDTO<T> {
@@ -10,7 +9,7 @@ interface ItemsDTO<T> {
 @Serializable
 data class Company(
     val name: String,
-    val order: Long,
+    val order: Int,
     val hidden: Boolean,
     val description: Description,
     val homepage: String,
@@ -30,8 +29,8 @@ data class Description(
 
 @Serializable
 data class Logo(
-    @SerialName("2x") val x2: String,
-    @SerialName("3x") val x3: String
+    val x2: String,
+    val x3: String
 )
 
 @Serializable
@@ -39,7 +38,7 @@ data class CompaniesDTO(override val items: List<Company>) : ItemsDTO<Company>
 
 @Serializable
 data class Station(
-    val id: Double,
+    val id: Long,
     val company: String,
     val latitude: Double,
     val longitude: Double,

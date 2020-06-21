@@ -1,6 +1,6 @@
 package fuel.hunter.service
 
-import fuel.hunter.Snapshot
+import fuel.hunter.models.Snapshot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ReceiveChannel

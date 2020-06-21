@@ -1,6 +1,6 @@
 package fuel.hunter.scrapers.internal
 
-import fuel.hunter.Snapshot
+import fuel.hunter.models.Snapshot
 import fuel.hunter.extensions.snapshot
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
