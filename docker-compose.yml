@@ -21,3 +21,13 @@ services:
       - fuel-hunter-mongo
     links:
       - fuel-hunter-mongo
+
+  envoy:
+    image: envoyproxy/envoy:v1.14-latest
+    container_name: envoy
+    ports:
+    - 9901:9901
+    - 51051:51051
+    volumes:
+    - "./build/generated/source/proto/main/descriptor_set.desc:/data/descriptor_set.desc"
+    - "./envoy-config.yml:/etc/envoy/envoy.yaml:ro"

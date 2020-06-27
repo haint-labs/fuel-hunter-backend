@@ -52,7 +52,7 @@ dependencies {
     implementation("org.litote.kmongo:kmongo-coroutine-serialization:4.0.2")
     implementation("io.github.gaplotech:kotlin-protobuf-bson-codec:0.3.0")
 
-    protobuf("com.github.haint-labs:fuel-hunter-proto:467e3a98")
+    protobuf("com.github.haint-labs:fuel-hunter-proto:07a1e208")
 }
 
 protobuf {
@@ -72,6 +72,10 @@ protobuf {
 
     generateProtoTasks {
         ofSourceSet("main").forEach {
+            it.generateDescriptorSet = true
+            it.descriptorSetOptions.includeSourceInfo = true
+            it.descriptorSetOptions.includeImports = true
+
             it.plugins {
                 id("grpc")
                 id("grpckt")
