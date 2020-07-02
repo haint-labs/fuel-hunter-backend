@@ -6,7 +6,6 @@ plugins {
     application
     java
     kotlin("jvm") version "1.3.70"
-    kotlin("plugin.serialization") version "1.3.70"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("com.google.protobuf") version "0.8.12"
 }
@@ -45,11 +44,7 @@ dependencies {
 
     implementation("javax.annotation:javax.annotation-api:1.3.1")
 
-    implementation("io.ktor:ktor-server-netty:1.3.2")
-    implementation("io.ktor:ktor-serialization:1.3.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
-
-    implementation("org.litote.kmongo:kmongo-coroutine-serialization:4.0.2")
+    implementation("org.litote.kmongo:kmongo-coroutine-native:4.0.2")
     implementation("io.github.gaplotech:kotlin-protobuf-bson-codec:0.3.0")
 
     protobuf("com.github.haint-labs:fuel-hunter-proto:38a15bb3")

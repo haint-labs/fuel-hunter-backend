@@ -6,7 +6,6 @@ import com.mongodb.reactivestreams.client.MongoClients
 import fuel.hunter.dao.InMemorySnapshotDao
 import fuel.hunter.grpc.FuelHunterGrpc
 import fuel.hunter.models.Snapshot
-import fuel.hunter.rest.launchRestService
 import fuel.hunter.scrapers.internal.CircleKScrapper
 import fuel.hunter.scrapers.internal.LaaczScraper
 import fuel.hunter.scrapers.internal.NesteScraper
@@ -51,8 +50,6 @@ fun main(args: Array<String>) {
     GlobalScope.launch {
         launchScrappers(documentProvider, config.dataFeedRefreshInterval, scrapers, snapshots)
         launchStorage(snapshots, memory)
-
-        launchRestService(dbClient)
     }
 
     val snapshotDao = InMemorySnapshotDao(memory)
