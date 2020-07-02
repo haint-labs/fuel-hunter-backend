@@ -10,11 +10,12 @@ services:
       - MONGO_INITDB_DATABASE=fuel-hunter
 
   fuel-hunter:
-    image: sashjakk/fuel-hunter:0.0.4
+    build:
+      context: ../
+      dockerfile: ./deploy/Dockerfile
     container_name: fuel-hunter
     ports:
       - 50051:50051
-      - 8000:8000
     environment:
       - DB_HOST=fuel-hunter-mongo
     depends_on:
@@ -22,12 +23,12 @@ services:
     links:
       - fuel-hunter-mongo
 
-  envoy:
+  fuel-hunter-envoy:
     image: envoyproxy/envoy:v1.14-latest
-    container_name: envoy
+    container_name: fuel-hunter-envoy
     ports:
     - 9901:9901
-    - 51051:51051
+    - 8000:8000
     volumes:
-    - "./build/generated/source/proto/main/descriptor_set.desc:/data/descriptor_set.desc"
-    - "./envoy-config.yml:/etc/envoy/envoy.yaml:ro"
+    - "../build/generated/source/proto/main/descriptor_set.desc:/data/descriptor_set.desc"
+    - "../deploy/envoy/config.mac.yml:/etc/envoy/envoy.yaml:ro"

@@ -1,36 +1,19 @@
-OWNER = sashjakk
-NAME = fuel-hunter
-VERSION ?= 0.0.4
+local: local-deploy-containers
 
-SSH_SERVER_NAME = digital-ocean
+.PHONY: sync-envoy
+sync-envoy:
+	rsync -zvh \
+		./build/generated/source/proto/main/descriptor_set.desc \
+		./deploy/envoy/config.linux.yml \
+		root@digital-ocean:/var/www/fuel_hunter/config
 
-ARTIFACT_NAME = $(OWNER)/$(NAME):$(VERSION)
+.PHONY: local-deploy-containers
+local-deploy-containers:
+	docker-compose -f ./deploy/docker-compose.yml up -d
 
-all: build push deploy
-
-.PHONY: build
-build:
-	docker build -t $(ARTIFACT_NAME) .
-
-
-.PHONY: push
-push:
-	docker push $(ARTIFACT_NAME)
-
-
-.PHONY: deploy
-deploy:
-	ssh digital-ocean $(DEPLOY_SCRIPT)
-
-
-DEPLOY_SCRIPT = "\
-	docker pull $(ARTIFACT_NAME); \
-	docker kill $(NAME); \
-	docker rm $(NAME); \
-	docker run -d \
-		-p 50051:50051 \
-		-p 8000:8000 \
-		--network fuel-hunter-network \
-		-e DB_HOST=fuel-hunter-mongo \
-		--name $(NAME) $(ARTIFACT_NAME); \
-"
+# TODO: use ansible?
+#.PHONY: prod-deploy-containers
+#prod-deploy-containers:
+#	eval "$(docker-machine env digital-ocean)"; \
+#	docker-compose -f ./deploy/docker-compose.yml -f ./deploy/docker-compose.prod.yml up -d --build; \
+#	eval "$(docker-machine env -u)"
