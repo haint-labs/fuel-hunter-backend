@@ -6,6 +6,8 @@ import com.mongodb.reactivestreams.client.MongoClients
 import fuel.hunter.dao.InMemorySnapshotDao
 import fuel.hunter.grpc.FuelHunterGrpc
 import fuel.hunter.models.Price
+import fuel.hunter.repo.MongoRepository
+import fuel.hunter.repo.Repository
 import fuel.hunter.scrapers.internal.CircleKScrapper
 import fuel.hunter.scrapers.internal.LaaczScraper
 import fuel.hunter.scrapers.internal.NesteScraper
@@ -25,13 +27,6 @@ fun main(args: Array<String>) {
     val config = getConfiguration(args.firstOrNull())
     println("[SERVER] Starting with configuration - ${config}...")
 
-    val documentProvider = config.provider
-    val scrapers = mapOf(
-        "https://www.neste.lv/lv/content/degvielas-cenas" to NesteScraper(),
-        "https://www.circlek.lv/lv_LV/pg1334072578525/private/Degviela/Cenas.html" to CircleKScrapper(),
-        "https://laacz.lv/f/misc/gas-prices.php" to LaaczScraper()
-    )
-
     val dbSettings = MongoClientSettings
         .builder()
         .applyConnectionString(ConnectionString(config.database))
@@ -46,6 +41,15 @@ fun main(args: Array<String>) {
 
     val memory = mutableListOf<Price>()
     val snapshots = Channel<Price>(100)
+
+    val repo: Repository = MongoRepository(dbClient)
+
+    val documentProvider = config.provider
+    val scrapers = mapOf(
+        "https://www.neste.lv/lv/content/degvielas-cenas" to NesteScraper(),
+        "https://www.circlek.lv/lv_LV/pg1334072578525/private/Degviela/Cenas.html" to CircleKScrapper(),
+        "https://laacz.lv/f/misc/gas-prices.php" to LaaczScraper(repo)
+    )
 
     GlobalScope.launch {
         launchScrappers(documentProvider, config.dataFeedRefreshInterval, scrapers, snapshots)
