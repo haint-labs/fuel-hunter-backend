@@ -1,6 +1,6 @@
 package fuel.hunter.service
 
-import fuel.hunter.models.Snapshot
+import fuel.hunter.models.Price
 import fuel.hunter.scrapers.DocumentProvider
 import fuel.hunter.scrapers.internal.Scraper
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,7 @@ fun CoroutineScope.launchScrappers(
     documentProvider: DocumentProvider,
     dataFeedRefreshInterval: Int,
     scrapers: Map<String, Scraper>,
-    snapshots: SendChannel<Snapshot>
+    snapshots: SendChannel<Price>
 ) = launch {
     println("[SCRAPPERS] Started...")
 
@@ -43,7 +43,7 @@ fun CoroutineScope.launchScrappers(
             .merge()
             .collect {
                 snapshots.send(it)
-                println("[SCRAPPERS] Pushing new snapshot - ${it.name}, ${it.type}: ${it.price}")
+                println("[SCRAPPERS] Pushing new price - ${it.name}, ${it.type}: ${it.price}")
             }
 
         val randomizedDelay = dataFeedRefreshInterval + random.nextInt(100) * 100L

@@ -1,7 +1,7 @@
 package fuel.hunter.scrapers.internal
 
-import fuel.hunter.models.Snapshot
-import fuel.hunter.extensions.snapshot
+import fuel.hunter.models.Price
+import fuel.hunter.extensions.price
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jsoup.nodes.Document
@@ -12,15 +12,15 @@ private const val providerName = "Circle K"
 private val priceRegex = "(.+)\\s(.+)".toRegex()
 
 private val fuelTypeMap = mapOf(
-    "1335453340249" to "95 miles",
-    "1335520335162" to "98 miles PLUS",
-    "1335453340279" to "D miles",
-    "1335520335169" to "D miles PLUS",
-    "1335453340203" to "gas"
+    "1335453340249" to Price.FuelType.E95,
+    "1335520335162" to Price.FuelType.E95,
+    "1335453340279" to Price.FuelType.DD,
+    "1335520335169" to Price.FuelType.DD,
+    "1335453340203" to Price.FuelType.GAS
 )
 
 class CircleKScrapper : Scraper {
-    override fun scrape(document: Document): Flow<Snapshot> = flow {
+    override fun scrape(document: Document): Flow<Price> = flow {
         document.circlekSnapshotChunks.forEach { chunk ->
             val fuelType = getFuelType(chunk[0].html())
 
@@ -37,8 +37,7 @@ class CircleKScrapper : Scraper {
                         ?.let { "$providerName, $it" }
                         ?: providerName
 
-                    val item = snapshot {
-                        provider = providerName
+                    val item = price {
                         name = composedName
                         address = raw
                         city = "Rīga"
@@ -51,7 +50,7 @@ class CircleKScrapper : Scraper {
         }
     }
 
-    private fun getFuelType(rawImageTag: String): String {
+    private fun getFuelType(rawImageTag: String): Price.FuelType {
         val key = fuelTypeMap.keys.firstOrNull { rawImageTag.contains(it) }
             ?: throw IllegalArgumentException("Unknown type provided")
 

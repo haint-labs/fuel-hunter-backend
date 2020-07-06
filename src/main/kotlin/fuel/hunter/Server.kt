@@ -5,7 +5,7 @@ import com.mongodb.MongoClientSettings
 import com.mongodb.reactivestreams.client.MongoClients
 import fuel.hunter.dao.InMemorySnapshotDao
 import fuel.hunter.grpc.FuelHunterGrpc
-import fuel.hunter.models.Snapshot
+import fuel.hunter.models.Price
 import fuel.hunter.scrapers.internal.CircleKScrapper
 import fuel.hunter.scrapers.internal.LaaczScraper
 import fuel.hunter.scrapers.internal.NesteScraper
@@ -44,8 +44,8 @@ fun main(args: Array<String>) {
         .build()
     val dbClient = KMongo.createClient(dbSettings)
 
-    val memory = mutableListOf<Snapshot>()
-    val snapshots = Channel<Snapshot>(100)
+    val memory = mutableListOf<Price>()
+    val snapshots = Channel<Price>(100)
 
     GlobalScope.launch {
         launchScrappers(documentProvider, config.dataFeedRefreshInterval, scrapers, snapshots)

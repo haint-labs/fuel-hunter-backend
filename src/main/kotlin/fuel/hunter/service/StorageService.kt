@@ -1,6 +1,6 @@
 package fuel.hunter.service
 
-import fuel.hunter.models.Snapshot
+import fuel.hunter.models.Price
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -9,8 +9,8 @@ import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 fun CoroutineScope.launchStorage(
-    input: ReceiveChannel<Snapshot>,
-    items: MutableList<Snapshot>,
+    input: ReceiveChannel<Price>,
+    items: MutableList<Price>,
     limit: Int = 10000
 ) = launch {
     println("[STORAGE] Started...")

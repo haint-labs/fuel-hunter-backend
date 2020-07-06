@@ -1,21 +1,28 @@
 package fuel.hunter.scrapers.internal
 
-import fuel.hunter.models.Snapshot
-import fuel.hunter.extensions.snapshot
+import fuel.hunter.models.Price
+import fuel.hunter.extensions.price
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
+private val fuelTypeMap = mapOf(
+    "95" to Price.FuelType.E95,
+    "98" to Price.FuelType.E98,
+    "diesel" to Price.FuelType.DD,
+    "lpg" to Price.FuelType.GAS
+)
+
 class LaaczScraper : Scraper {
-    override fun scrape(document: Document): Flow<Snapshot> = flow {
+    override fun scrape(document: Document): Flow<Price> = flow {
         val fuelTypeMap = document
             .select("table.sortable thead th")
             .drop(1)
             .withIndex()
             .associateBy(
                 keySelector = { it.index },
-                valueTransform = { it.value.ownText() }
+                valueTransform = { fuelTypeMap[it.value.ownText()] }
             )
 
         document.laaczSnapshotChunks.forEach { chunk ->
@@ -33,8 +40,7 @@ class LaaczScraper : Scraper {
                         ?: return@forEachIndexed
 
                     emit(
-                        snapshot {
-                            provider = ""
+                        price {
                             name = addressElement.ownText()
                             address = addressParts[0]
                             city = addressParts[1]
