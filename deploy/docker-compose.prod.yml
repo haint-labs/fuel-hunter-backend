@@ -1,6 +1,9 @@
 version: "3.8"
 
 services:
+  fuel-hunter-mongo:
+    volumes:
+      - "/.mongo/data:/data/db"
   fuel-hunter-envoy:
     volumes:
     - "/var/www/fuel_hunter/config/descriptor_set.desc:/data/descriptor_set.desc"
