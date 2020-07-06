@@ -8,6 +8,8 @@ services:
       - 27017:27017
     environment:
       - MONGO_INITDB_DATABASE=fuel-hunter
+    volumes:
+    - ../.mongo/data:/data/db
 
   fuel-hunter:
     build:
