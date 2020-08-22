@@ -3,7 +3,6 @@ package fuel.hunter
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.reactivestreams.client.MongoClients
-import fuel.hunter.dao.InMemorySnapshotDao
 import fuel.hunter.grpc.FuelHunterGrpc
 import fuel.hunter.models.Price
 import fuel.hunter.repo.MongoRepository
@@ -32,14 +31,15 @@ fun main(args: Array<String>) {
         .applyConnectionString(ConnectionString(config.database))
         .codecRegistry(
             CodecRegistries.fromRegistries(
-                CodecRegistries.fromProviders(PBCodecProvider()),
+                CodecRegistries.fromProviders(
+                    PBCodecProvider(preservingProtoFieldNames = false)
+                ),
                 MongoClients.getDefaultCodecRegistry()
             )
         )
         .build()
     val dbClient = KMongo.createClient(dbSettings)
 
-    val memory = mutableListOf<Price>()
     val snapshots = Channel<Price>(100)
 
     val repo: Repository = MongoRepository(dbClient)
@@ -53,11 +53,10 @@ fun main(args: Array<String>) {
 
     GlobalScope.launch {
         launchScrappers(documentProvider, config.dataFeedRefreshInterval, scrapers, snapshots)
-        launchStorage(snapshots, memory)
+        launchStorage(snapshots, dbClient)
     }
 
-    val snapshotDao = InMemorySnapshotDao(memory)
-    val fuelHunter = FuelHunterGrpc(snapshotDao, dbClient)
+    val fuelHunter = FuelHunterGrpc(dbClient)
 
     ServerBuilder.forPort(config.port)
         .addService(fuelHunter)
