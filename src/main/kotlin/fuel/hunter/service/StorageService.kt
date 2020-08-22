@@ -1,32 +1,34 @@
 package fuel.hunter.service
 
+import com.mongodb.reactivestreams.client.MongoClient
 import fuel.hunter.models.Price
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
+import org.bson.types.ObjectId
+import org.litote.kmongo.coroutine.coroutine
 
 @ExperimentalCoroutinesApi
 fun CoroutineScope.launchStorage(
     input: ReceiveChannel<Price>,
-    items: MutableList<Price>,
-    limit: Int = 10000
+    dbClient: MongoClient
 ) = launch {
-    println("[STORAGE] Started...")
+    val collection = dbClient
+        .coroutine
+        .getDatabase("fuel-hunter")
+        .getCollection<Price>("prices")
 
-    var index = 0
+    input
+        .consumeAsFlow()
+        .onStart { println("[STORAGE] Started...") }
+        .onEach {
+            val p = it.toBuilder()
+                .setId(ObjectId.get().toHexString())
+                .build()
 
-    input.consumeEach {
-        if (items.size < limit) {
-            items.add(it)
-        } else {
-            items[index] = it
+            collection.insertOne(p)
+            println("[STORAGE] Saved snapshot - name: ${it.name}, type: ${it.type}, price: ${it.price}")
         }
-
-        println("[STORAGE] Saved snapshot - [index: $index] ${it.name}")
-        index = (index + 1) % limit
-    }
-
-    println("[STORAGE] Closed")
+        .onCompletion { println("[STORAGE] Closed") }
+        .collect()
 }
