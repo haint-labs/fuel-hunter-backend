@@ -2,8 +2,6 @@ package fuel.hunter.grpc
 
 import com.mongodb.reactivestreams.client.MongoClient
 import fuel.hunter.FuelHunterServiceGrpcKt.FuelHunterServiceCoroutineImplBase
-import fuel.hunter.dao.SnapshotDao
-import fuel.hunter.extensions.priceResponse
 import fuel.hunter.models.Company
 import fuel.hunter.models.Price
 import fuel.hunter.models.Station
@@ -12,7 +10,6 @@ import kotlinx.coroutines.flow.toList
 import org.litote.kmongo.coroutine.coroutine
 
 class FuelHunterGrpc(
-    private val snapshotDao: SnapshotDao,
     private val dbClient: MongoClient
 ) : FuelHunterServiceCoroutineImplBase() {
     private val db by lazy {
@@ -20,10 +17,16 @@ class FuelHunterGrpc(
     }
 
     override suspend fun getPrices(request: Price.Query): Price.Response {
-        val snapshots = snapshotDao.getMatching(request)
-        return priceResponse {
-            addAllPrices(snapshots)
-        }
+        val prices = db
+            .getCollection<Price>("prices")
+            .find()
+            .toFlow()
+            .toList()
+
+        return Price.Response
+            .newBuilder()
+            .addAllPrices(prices)
+            .build()
     }
 
     override suspend fun getStations(request: Station.Query): Station.Response {
