@@ -60,7 +60,7 @@ class LaaczScraper(
                             stationId = run {
                                 stationAddressToIdMap[addressParts[0]]
                                     ?: stationNameToIdMap[addressElement.ownText()]
-                                    ?: -1
+                                    ?: ""
                             }
                         }
                     )

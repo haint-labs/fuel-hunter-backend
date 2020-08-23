@@ -40,14 +40,14 @@ dependencies {
     implementation("io.grpc:grpc-netty-shaded:1.29.0")
     implementation("io.grpc:grpc-protobuf:1.29.0")
     implementation("io.grpc:grpc-stub:1.29.0")
-    implementation("io.grpc:grpc-kotlin-stub:0.1.1")
+    implementation("io.grpc:grpc-kotlin-stub:0.1.4")
 
     implementation("javax.annotation:javax.annotation-api:1.3.1")
 
     implementation("org.litote.kmongo:kmongo-coroutine-native:4.0.2")
     implementation("io.github.gaplotech:kotlin-protobuf-bson-codec:0.3.0")
 
-    protobuf("com.github.haint-labs:fuel-hunter-proto:faa044e")
+    protobuf("com.github.haint-labs:fuel-hunter-proto:b4de62f3")
 }
 
 protobuf {
