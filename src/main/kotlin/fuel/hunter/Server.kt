@@ -46,8 +46,8 @@ fun main(args: Array<String>) {
 
     val documentProvider = config.provider
     val scrapers = mapOf(
-        "https://www.neste.lv/lv/content/degvielas-cenas" to NesteScraper(),
-        "https://www.circlek.lv/lv_LV/pg1334072578525/private/Degviela/Cenas.html" to CircleKScrapper(),
+        "https://www.neste.lv/lv/content/degvielas-cenas" to NesteScraper(repo),
+        "https://www.circlek.lv/lv_LV/pg1334072578525/private/Degviela/Cenas.html" to CircleKScrapper(repo),
         "https://laacz.lv/f/misc/gas-prices.php" to LaaczScraper(repo)
     )
 
