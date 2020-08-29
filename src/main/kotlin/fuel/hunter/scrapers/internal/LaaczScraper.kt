@@ -1,7 +1,7 @@
 package fuel.hunter.scrapers.internal
 
-import fuel.hunter.models.Price
 import fuel.hunter.extensions.price
+import fuel.hunter.models.Price
 import fuel.hunter.repo.Repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -15,9 +15,7 @@ private val fuelTypeMap = mapOf(
     "lpg" to Price.FuelType.GAS
 )
 
-class LaaczScraper(
-    private val repository: Repository
-) : Scraper {
+class LaaczScraper(private val repo: Repository) : Scraper {
     override fun scrape(document: Document): Flow<Price> = flow {
         val fuelTypeMap = document
             .select("table.sortable thead th")
@@ -28,13 +26,7 @@ class LaaczScraper(
                 valueTransform = { fuelTypeMap[it.value.ownText()] }
             )
 
-        val stations = repository.getStations()
-
-        val stationAddressToIdMap = stations
-            .associate { it.address to it.id }
-
-        val stationNameToIdMap = stations
-            .associate { it.name to it.id }
+        val stations = repo.getStations()
 
         document.laaczSnapshotChunks.forEach { chunk ->
             val addressElement = chunk.first()
@@ -50,20 +42,30 @@ class LaaczScraper(
                     element.takeIf { it.text() != "-" }
                         ?: return@forEachIndexed
 
-                    emit(
-                        price {
+                    val station = stations.find { s -> s.address == addressParts[0] }
+                            ?: stations.find { s -> s.name == addressElement.ownText() }
+
+                    val price = station
+                        ?.let {
+                            price {
+                                name = it.name
+                                address = it.address
+                                city = it.city
+                                stationId = it.id
+                                type = fuelTypeMap[index]
+                                price = element.text().toFloat()
+                            }
+                        }
+                        ?: price {
                             name = addressElement.ownText()
                             address = addressParts[0]
                             city = addressParts[1]
+                            stationId = ""
                             type = fuelTypeMap[index]
                             price = element.text().toFloat()
-                            stationId = run {
-                                stationAddressToIdMap[addressParts[0]]
-                                    ?: stationNameToIdMap[addressElement.ownText()]
-                                    ?: ""
-                            }
                         }
-                    )
+
+                    emit(price)
                 }
         }
     }
