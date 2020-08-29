@@ -5,6 +5,7 @@ import com.mongodb.MongoClientSettings
 import com.mongodb.reactivestreams.client.MongoClients
 import fuel.hunter.grpc.FuelHunterGrpc
 import fuel.hunter.models.Price
+import fuel.hunter.models.Station
 import fuel.hunter.repo.MongoRepository
 import fuel.hunter.repo.Repository
 import fuel.hunter.scrapers.internal.CircleKScrapper
@@ -17,9 +18,13 @@ import io.grpc.ServerBuilder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.bson.codecs.configuration.CodecRegistries
 import org.litote.kmongo.reactivestreams.KMongo
+
+typealias Prices = List<Price>
+typealias Stations = List<Station>
 
 @ExperimentalCoroutinesApi
 fun main(args: Array<String>) {
@@ -40,7 +45,7 @@ fun main(args: Array<String>) {
         .build()
     val dbClient = KMongo.createClient(dbSettings)
 
-    val snapshots = Channel<Price>(100)
+    val prices = Channel<Prices>(100)
 
     val repo: Repository = MongoRepository(dbClient)
 
@@ -52,8 +57,8 @@ fun main(args: Array<String>) {
     )
 
     GlobalScope.launch {
-        launchScrappers(documentProvider, config.dataFeedRefreshInterval, scrapers, snapshots)
-        launchStorage(snapshots, dbClient)
+        launchScrappers(documentProvider, config.dataFeedRefreshInterval, scrapers, prices)
+        launchStorage(prices.receiveAsFlow(), dbClient)
     }
 
     val fuelHunter = FuelHunterGrpc(dbClient)

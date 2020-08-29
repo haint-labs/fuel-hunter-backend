@@ -1,5 +1,6 @@
 package fuel.hunter.scrapers.internal
 
+import fuel.hunter.Prices
 import fuel.hunter.extensions.price
 import fuel.hunter.models.Price
 import fuel.hunter.repo.Repository
@@ -17,7 +18,7 @@ private val fuelTypeMap = mapOf(
 )
 
 class CircleKScrapper(private val repo: Repository) : Scraper {
-    override fun scrape(document: Document): Flow<Price> = flow {
+    override fun scrape(document: Document): Flow<Prices> = flow {
         val stations = repo.getStations()
 
         val chunks = document
@@ -25,14 +26,14 @@ class CircleKScrapper(private val repo: Repository) : Scraper {
             .drop(1)
             .map { it.children().map { it.text() } }
 
-        chunks
+        val prices = chunks
             .map { (rawType, rawPrice, rawAddress) ->
                 val regex = rawAddress.toAddressRegex()
 
                 val station = stations
                     .find { s -> s.address.matches(regex) }
 
-                val price = station
+                station
                     ?.let {
                         price {
                             name = station.name
@@ -49,11 +50,11 @@ class CircleKScrapper(private val repo: Repository) : Scraper {
                         city = "Rīga"
                         stationId = ""
                         type = fuelTypeMap[rawType]
-                        price = rawPrice.toFloat()
+                        price = rawPrice.replace(" EUR", "").toFloat()
                     }
-
-                emit(price)
             }
+
+        emit(prices)
     }
 }
 
