@@ -5,6 +5,9 @@ import fuel.hunter.FuelHunterServiceGrpcKt.FuelHunterServiceCoroutineImplBase
 import fuel.hunter.models.Company
 import fuel.hunter.models.Price
 import fuel.hunter.models.Station
+import fuel.hunter.repo.Station2
+import fuel.hunter.repo.fromEntity
+import fuel.hunter.repo.toEntity
 import fuel.hunter.shared.Update
 import kotlinx.coroutines.flow.toList
 import org.litote.kmongo.coroutine.coroutine
@@ -31,10 +34,11 @@ class FuelHunterGrpc(
 
     override suspend fun getStations(request: Station.Query): Station.Response {
         val stations = db
-            .getCollection<Station>("stations")
+            .getCollection<Station2>("stations")
             .find()
             .toFlow()
             .toList()
+            .map(Station2::fromEntity)
 
         return Station.Response
             .newBuilder()
@@ -44,12 +48,12 @@ class FuelHunterGrpc(
 
     override suspend fun updateStations(request: Station.UpdateRequest): Update.Response {
         val collection = db
-            .getCollection<Station>("stations")
+            .getCollection<Station2>("stations")
 
         val count = with(collection) {
             deleteMany()
 
-            insertMany(request.stationsList)
+            insertMany(request.stationsList.map(Station::toEntity))
                 .insertedIds
                 .size
         }
