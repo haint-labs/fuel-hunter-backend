@@ -3,7 +3,7 @@ package fuel.hunter.scrapers.internal
 import fuel.hunter.Prices
 import fuel.hunter.extensions.price
 import fuel.hunter.models.Price
-import fuel.hunter.repo.Repository
+import fuel.hunter.models.Station
 import fuel.hunter.tools.toAddressRegex
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,10 +17,8 @@ private val fuelTypeMap = mapOf(
     "Autogāze" to Price.FuelType.GAS
 )
 
-class CircleKScrapper(private val repo: Repository) : Scraper {
-    override fun scrape(document: Document): Flow<Prices> = flow {
-        val stations = repo.getStations()
-
+class CircleKScrapper : Scraper {
+    override fun scrape(stations: List<Station>, document: Document): Flow<Prices> = flow {
         val chunks = document
             .select("table tr")
             .drop(1)

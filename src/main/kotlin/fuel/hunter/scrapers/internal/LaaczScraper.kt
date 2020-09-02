@@ -3,7 +3,7 @@ package fuel.hunter.scrapers.internal
 import fuel.hunter.Prices
 import fuel.hunter.extensions.price
 import fuel.hunter.models.Price
-import fuel.hunter.repo.Repository
+import fuel.hunter.models.Station
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jsoup.nodes.Document
@@ -16,8 +16,8 @@ private val fuelTypeMap = mapOf(
     "lpg" to Price.FuelType.GAS
 )
 
-class LaaczScraper(private val repo: Repository) : Scraper {
-    override fun scrape(document: Document): Flow<Prices> = flow {
+class LaaczScraper : Scraper {
+    override fun scrape(stations: List<Station>, document: Document): Flow<Prices> = flow {
         val fuelTypeMap = document
             .select("table.sortable thead th")
             .drop(1)
@@ -26,8 +26,6 @@ class LaaczScraper(private val repo: Repository) : Scraper {
                 keySelector = { it.index },
                 valueTransform = { fuelTypeMap[it.value.ownText()] }
             )
-
-        val stations = repo.getStations()
 
         val prices = document
             .laaczSnapshotChunks

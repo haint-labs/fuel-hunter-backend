@@ -3,14 +3,14 @@ package fuel.hunter.scrapers.internal
 import fuel.hunter.Prices
 import fuel.hunter.extensions.price
 import fuel.hunter.models.Price
-import fuel.hunter.repo.Repository
+import fuel.hunter.models.Station
 import fuel.hunter.tools.toAddressRegex
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jsoup.nodes.Document
 
 interface Scraper {
-    fun scrape(document: Document): Flow<Prices>
+    fun scrape(stations: List<Station>, document: Document): Flow<Prices>
 }
 
 private val fuelTypeMap = mapOf(
@@ -20,10 +20,8 @@ private val fuelTypeMap = mapOf(
     "Neste Pro Diesel" to Price.FuelType.DD
 )
 
-class NesteScraper(private val repo: Repository) : Scraper {
-    override fun scrape(document: Document): Flow<Prices> = flow {
-        val stations = repo.getStations()
-
+class NesteScraper : Scraper {
+    override fun scrape(stations: List<Station>, document: Document): Flow<Prices> = flow {
         val prices = document
             .nesteSnapshotChunks
             .flatMap { chunk ->
