@@ -1,17 +1,14 @@
-package fuel.hunter.scrapers.internal
+package fuel.hunter.scrapers.impl
 
 import fuel.hunter.Prices
 import fuel.hunter.extensions.price
 import fuel.hunter.models.Price
 import fuel.hunter.models.Station
+import fuel.hunter.scrapers.Scraper
 import fuel.hunter.tools.toAddressRegex
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jsoup.nodes.Document
-
-interface Scraper {
-    fun scrape(stations: List<Station>, document: Document): Flow<Prices>
-}
 
 private val fuelTypeMap = mapOf(
     "Neste Futura 95" to Price.FuelType.E95,

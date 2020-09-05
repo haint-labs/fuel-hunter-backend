@@ -1,23 +1,24 @@
-package fuel.hunter.scrapers.internal
+package fuel.hunter.scrapers.impl
 
 import fuel.hunter.Prices
 import fuel.hunter.extensions.price
-import fuel.hunter.models.Price
+import fuel.hunter.models.Price.FuelType.*
 import fuel.hunter.models.Station
+import fuel.hunter.scrapers.Scraper
 import fuel.hunter.tools.toAddressRegex
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jsoup.nodes.Document
 
 private val fuelTypeMap = mapOf(
-    "miles 95" to Price.FuelType.E95,
-    "milesPLUS 98" to Price.FuelType.E98,
-    "miles D" to Price.FuelType.DD,
-    "milesPLUS D" to Price.FuelType.DD,
-    "Autogāze" to Price.FuelType.GAS
+    "miles 95" to E95,
+    "milesPLUS 98" to E98,
+    "miles D" to DD,
+    "milesPLUS D" to DD,
+    "Autogāze" to GAS
 )
 
-class CircleKScrapper : Scraper {
+class CircleKScraper : Scraper {
     override fun scrape(stations: List<Station>, document: Document): Flow<Prices> = flow {
         val chunks = document
             .select("table tr")

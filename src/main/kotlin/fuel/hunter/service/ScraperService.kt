@@ -3,7 +3,7 @@ package fuel.hunter.service
 import fuel.hunter.Prices
 import fuel.hunter.repo.Repository
 import fuel.hunter.scrapers.DocumentProvider
-import fuel.hunter.scrapers.internal.Scraper
+import fuel.hunter.scrapers.Scraper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.SendChannel
@@ -11,7 +11,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.util.*
 
 @ExperimentalCoroutinesApi

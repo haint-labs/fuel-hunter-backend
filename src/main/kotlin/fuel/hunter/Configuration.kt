@@ -1,7 +1,7 @@
 package fuel.hunter
 
 import fuel.hunter.scrapers.DocumentProvider
-import fuel.hunter.scrapers.internal.OfflineDocumentProvider
+import fuel.hunter.scrapers.OfflineDocumentProvider
 import java.util.*
 
 private const val PROP_PORT = "fuel.hunter.port"

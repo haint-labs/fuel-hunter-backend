@@ -1,9 +1,10 @@
-package fuel.hunter.scrapers.internal
+package fuel.hunter.scrapers.impl
 
 import fuel.hunter.Prices
 import fuel.hunter.extensions.price
 import fuel.hunter.models.Price
 import fuel.hunter.models.Station
+import fuel.hunter.scrapers.Scraper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jsoup.nodes.Document
