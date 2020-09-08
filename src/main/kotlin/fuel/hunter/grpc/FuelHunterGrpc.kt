@@ -5,6 +5,7 @@ import fuel.hunter.FuelHunterServiceGrpcKt.FuelHunterServiceCoroutineImplBase
 import fuel.hunter.models.Company
 import fuel.hunter.models.Price
 import fuel.hunter.models.Station
+import fuel.hunter.repo.Repository
 import fuel.hunter.repo.Station2
 import fuel.hunter.repo.fromEntity
 import fuel.hunter.repo.toEntity
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.toList
 import org.litote.kmongo.coroutine.coroutine
 
 class FuelHunterGrpc(
+    private val repo: Repository,
     private val dbClient: MongoClient
 ) : FuelHunterServiceCoroutineImplBase() {
     private val db by lazy {
@@ -20,15 +22,9 @@ class FuelHunterGrpc(
     }
 
     override suspend fun getPrices(request: Price.Query): Price.Response {
-        val prices = db
-            .getCollection<Price>("prices")
-            .find()
-            .toFlow()
-            .toList()
-
         return Price.Response
             .newBuilder()
-            .addAllPrices(prices)
+            .addAllItems(repo.getPrices(request))
             .build()
     }
 

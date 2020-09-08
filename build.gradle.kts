@@ -47,7 +47,7 @@ dependencies {
     implementation("org.litote.kmongo:kmongo-coroutine-native:4.0.2")
     implementation("io.github.gaplotech:kotlin-protobuf-bson-codec:0.3.0")
 
-    protobuf("com.github.haint-labs:fuel-hunter-proto:b4de62f3")
+    protobuf("com.github.haint-labs:fuel-hunter-proto:17d21ee2")
 }
 
 protobuf {

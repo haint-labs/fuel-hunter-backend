@@ -61,7 +61,7 @@ fun main(args: Array<String>) {
         launchStorage(prices.receiveAsFlow(), dbClient)
     }
 
-    val fuelHunter = FuelHunterGrpc(dbClient)
+    val fuelHunter = FuelHunterGrpc(repo, dbClient)
 
     ServerBuilder.forPort(config.port)
         .addService(fuelHunter)
