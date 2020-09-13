@@ -7,6 +7,7 @@ import fuel.hunter.grpc.FuelHunterGrpc
 import fuel.hunter.models.Price
 import fuel.hunter.models.Station
 import fuel.hunter.repo.MongoRepository
+import fuel.hunter.repo.Price2
 import fuel.hunter.repo.Repository
 import fuel.hunter.scrapers.impl.CircleKScraper
 import fuel.hunter.scrapers.impl.LaaczScraper
@@ -45,7 +46,7 @@ fun main(args: Array<String>) {
         .build()
     val dbClient = KMongo.createClient(dbSettings)
 
-    val prices = Channel<Prices>(100)
+    val prices = Channel<List<Price2>>(100)
 
     val repo: Repository = MongoRepository(dbClient)
 

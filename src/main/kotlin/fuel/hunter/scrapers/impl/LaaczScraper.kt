@@ -1,9 +1,9 @@
 package fuel.hunter.scrapers.impl
 
-import fuel.hunter.Prices
-import fuel.hunter.extensions.price
 import fuel.hunter.models.Price
 import fuel.hunter.models.Station
+import fuel.hunter.repo.Price2
+import fuel.hunter.repo.Session
 import fuel.hunter.scrapers.Scraper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,7 +18,7 @@ private val fuelTypeMap = mapOf(
 )
 
 class LaaczScraper : Scraper {
-    override fun scrape(stations: List<Station>, document: Document): Flow<Prices> = flow {
+    override fun scrape(session: Session, stations: List<Station>, document: Document): Flow<List<Price2>> = flow {
         val fuelTypeMap = document
             .select("table.sortable thead th")
             .drop(1)
@@ -36,7 +36,7 @@ class LaaczScraper : Scraper {
                     .ownText()
                     .split(", ")
                     .takeIf { it.size == 2 }
-                    ?: return@flatMap emptyList<Price>()
+                    ?: return@flatMap emptyList<Price2>()
 
                 chunk
                     .drop(1)
@@ -46,26 +46,17 @@ class LaaczScraper : Scraper {
 
                         val station = stations.find { s -> s.address == addressParts[0] }
                             ?: stations.find { s -> s.name == addressElement.ownText() }
+                            ?: run {
+                                println("Unable to identify station - scrapper: Laacz, raw address: ${addressParts[0]}")
+                                return@mapIndexedNotNull null
+                            }
 
-                        station
-                            ?.let {
-                                price {
-                                    name = it.name
-                                    address = it.address
-                                    city = it.city
-                                    stationId = it.id
-                                    type = fuelTypeMap[index]
-                                    price = element.text().toFloat()
-                                }
-                            }
-                            ?: price {
-                                name = addressElement.ownText()
-                                address = addressParts[0]
-                                city = addressParts[1]
-                                stationId = ""
-                                type = fuelTypeMap[index]
-                                price = element.text().toFloat()
-                            }
+                        Price2(
+                            sessionId = session.id,
+                            stationId = station.id,
+                            type = fuelTypeMap[index].toString(),
+                            price = element.text().toFloat()
+                        )
                     }
             }
 

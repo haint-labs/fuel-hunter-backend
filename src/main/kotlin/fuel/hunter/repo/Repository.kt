@@ -9,10 +9,13 @@ import fuel.hunter.models.Price
 import fuel.hunter.models.Station
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactive.awaitFirst
 import org.bson.*
 import org.bson.conversions.Bson
 
 interface Repository {
+    suspend fun saveSession(session: Session)
+
     suspend fun getStations(): List<Station>
 
     suspend fun getPrices(query: Price.Query): List<Price.Response.Item>
@@ -23,6 +26,12 @@ class MongoRepository(
 ) : Repository {
     private val db by lazy {
         dbClient.getDatabase("fuel-hunter")
+    }
+
+    override suspend fun saveSession(session: Session) {
+        db.getCollection("sessions", Session::class.java)
+            .insertOne(session)
+            .awaitFirst()
     }
 
     override suspend fun getStations(): List<Station> {

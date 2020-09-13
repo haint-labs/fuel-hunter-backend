@@ -1,9 +1,9 @@
 package fuel.hunter.scrapers.impl
 
-import fuel.hunter.Prices
-import fuel.hunter.extensions.price
 import fuel.hunter.models.Price
 import fuel.hunter.models.Station
+import fuel.hunter.repo.Price2
+import fuel.hunter.repo.Session
 import fuel.hunter.scrapers.Scraper
 import fuel.hunter.tools.toAddressRegex
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +18,7 @@ private val fuelTypeMap = mapOf(
 )
 
 class NesteScraper : Scraper {
-    override fun scrape(stations: List<Station>, document: Document): Flow<Prices> = flow {
+    override fun scrape(session: Session, stations: List<Station>, document: Document): Flow<List<Price2>> = flow {
         val prices = document
             .nesteSnapshotChunks
             .flatMap { chunk ->
@@ -30,30 +30,20 @@ class NesteScraper : Scraper {
 
                 addressParts
                     .drop(1)
-                    .map {
+                    .mapNotNull {
                         val regex = it.toAddressRegex()
-
                         val station = stations.find { s -> s.address.matches(regex) }
+                            ?: run {
+                                println("Unable to identify station - scrapper: Neste, raw address: $it")
+                                return@mapNotNull null
+                            }
 
-                        station
-                            ?.let {
-                                price {
-                                    name = station.name
-                                    address = station.address
-                                    city = station.city
-                                    stationId = station.id
-                                    type = fuelTypeMap[rawType]
-                                    price = rawPrice.toFloat()
-                                }
-                            }
-                            ?: price {
-                                name = "Neste, $it"
-                                address = it
-                                city = addressParts[0]
-                                stationId = ""
-                                type = fuelTypeMap[rawType]
-                                price = rawPrice.toFloat()
-                            }
+                        Price2(
+                            sessionId = session.id,
+                            stationId = station.id,
+                            type = fuelTypeMap[rawType].toString(),
+                            price = rawPrice.toFloat()
+                        )
                     }
             }
 

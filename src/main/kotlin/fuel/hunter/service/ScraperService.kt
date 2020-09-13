@@ -1,7 +1,8 @@
 package fuel.hunter.service
 
-import fuel.hunter.Prices
+import fuel.hunter.repo.Price2
 import fuel.hunter.repo.Repository
+import fuel.hunter.repo.Session
 import fuel.hunter.scrapers.DocumentProvider
 import fuel.hunter.scrapers.Scraper
 import kotlinx.coroutines.CoroutineScope
@@ -19,13 +20,19 @@ fun CoroutineScope.launchScrappers(
     repo: Repository,
     dataFeedRefreshInterval: Int,
     scrapers: Map<String, Scraper>,
-    snapshots: SendChannel<Prices>
+    snapshots: SendChannel<List<Price2>>
 ) = launch {
     println("[SCRAPPERS] Started...")
 
     val random = Random()
 
     while (!snapshots.isClosedForSend) {
+        val session = Session(
+            timestamp = System.currentTimeMillis()
+        )
+
+        repo.saveSession(session)
+
         scrapers
             .entries
             .mapNotNull { (url, scrapper) ->
@@ -36,7 +43,7 @@ fun CoroutineScope.launchScrappers(
                     val stations = repo.getStations()
                     val document = documentProvider.getDocument(url)
 
-                    scrapper.scrape(stations, document)
+                    scrapper.scrape(session, stations, document)
                 } catch (e: Exception) {
                     println("[SCRAPPERS] Failed to get document - scraper: $scrapperName, url: $url")
                     e.printStackTrace()

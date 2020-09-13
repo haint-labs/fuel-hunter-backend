@@ -1,10 +1,8 @@
 package fuel.hunter.service
 
 import com.mongodb.reactivestreams.client.MongoClient
-import fuel.hunter.Prices
 import fuel.hunter.models.Price
 import fuel.hunter.repo.Price2
-import fuel.hunter.repo.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -14,7 +12,7 @@ import org.litote.kmongo.coroutine.coroutine
 
 @ExperimentalCoroutinesApi
 fun CoroutineScope.launchStorage(
-    input: Flow<Prices>,
+    input: Flow<List<Price2>>,
     dbClient: MongoClient
 ) = launch {
     val collection = dbClient
@@ -28,9 +26,8 @@ fun CoroutineScope.launchStorage(
             println("got new chunk ${chunk.size}")
             chunk
                 .windowed(500, 500, true)
-                .map { prices ->
-                    val identified = prices.map(Price::toEntity)
-                    val result = collection.insertMany(identified)
+                .onEach {
+                    val result = collection.insertMany(it)
 
                     println("[STORAGE] Saved prices batch - amount: ${result.insertedIds.size}")
                 }
