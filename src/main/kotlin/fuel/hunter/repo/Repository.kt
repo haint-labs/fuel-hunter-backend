@@ -43,6 +43,12 @@ class MongoRepository(
     }
 
     override suspend fun getPrices(query: Price.Query): List<Price.Response.Item> {
+        val lastSession = db.getCollection("sessions", Session::class.java)
+            .find()
+            .sort(BsonDocument().append("timestamp", BsonInt32(-1)))
+            .limit(1)
+            .awaitFirst()
+
         val pipe = mutableListOf<Bson>()
 
         // grab by location
@@ -74,6 +80,12 @@ class MongoRepository(
         // join with prices
         pipe += lookup("prices", "_id", "stationId", "prices")
 
+        // filter scrapping session
+        pipe += match(
+            BsonDocument()
+                .append("prices.sessionId", BsonString(lastSession.id))
+        )
+
         // flat map
         pipe += unwind("\$prices")
 
@@ -100,8 +112,6 @@ class MongoRepository(
                 .append("stationId", BsonString("\$_id"))
                 .append("prices", BsonBoolean(true))
         )
-
-        println("request - $pipe")
 
         return dbClient
             .getDatabase("fuel-hunter")
