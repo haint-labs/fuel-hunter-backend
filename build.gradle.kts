@@ -5,9 +5,9 @@ plugins {
     idea
     application
     java
-    kotlin("jvm") version "1.3.70"
-    id("com.github.johnrengelman.shadow") version "5.2.0"
-    id("com.google.protobuf") version "0.8.12"
+    kotlin("jvm") version "1.4.0"
+    id("com.github.johnrengelman.shadow") version "6.0.0"
+    id("com.google.protobuf") version "0.8.13"
 }
 
 group = "fuel.hunter"
@@ -32,19 +32,20 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.6")
+    implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
 
     implementation("org.jsoup:jsoup:1.13.1")
 
-    implementation("com.google.protobuf:protobuf-java:3.11.4")
-    implementation("io.grpc:grpc-netty-shaded:1.29.0")
-    implementation("io.grpc:grpc-protobuf:1.29.0")
-    implementation("io.grpc:grpc-stub:1.29.0")
-    implementation("io.grpc:grpc-kotlin-stub:0.1.4")
+    implementation("com.google.protobuf:protobuf-java:3.13.0")
+    implementation("io.grpc:grpc-netty-shaded:1.32.1")
+    implementation("io.grpc:grpc-protobuf:1.32.1")
+    implementation("io.grpc:grpc-stub:1.32.1")
+    implementation("io.grpc:grpc-kotlin-stub:0.2.0")
 
-    implementation("javax.annotation:javax.annotation-api:1.3.1")
+    implementation("javax.annotation:javax.annotation-api:1.3.2")
 
-    implementation("org.litote.kmongo:kmongo-coroutine-native:4.0.2")
+    implementation("org.litote.kmongo:kmongo-coroutine-native:4.1.1")
     implementation("io.github.gaplotech:kotlin-protobuf-bson-codec:0.3.0")
 
     protobuf("com.github.haint-labs:fuel-hunter-proto:17d21ee2")
@@ -52,16 +53,16 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.11.1"
+        artifact = "com.google.protobuf:protoc:3.13.0"
     }
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.25.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.32.1"
         }
 
         id("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:0.1.1"
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:0.2.0:jdk7@jar"
         }
     }
 
