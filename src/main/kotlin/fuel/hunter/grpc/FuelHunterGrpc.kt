@@ -7,7 +7,6 @@ import fuel.hunter.models.Price
 import fuel.hunter.models.Station
 import fuel.hunter.repo.Repository
 import fuel.hunter.repo.Station2
-import fuel.hunter.repo.fromEntity
 import fuel.hunter.repo.toEntity
 import fuel.hunter.shared.Update
 import kotlinx.coroutines.flow.toList
@@ -29,16 +28,9 @@ class FuelHunterGrpc(
     }
 
     override suspend fun getStations(request: Station.Query): Station.Response {
-        val stations = db
-            .getCollection<Station2>("stations")
-            .find()
-            .toFlow()
-            .toList()
-            .map(Station2::fromEntity)
-
         return Station.Response
             .newBuilder()
-            .addAllStations(stations)
+            .addAllStations(repo.getStations())
             .build()
     }
 
