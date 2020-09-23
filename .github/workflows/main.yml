@@ -1,0 +1,53 @@
+name: fuel-hunter
+
+on: push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2    
+      
+      - name: Setup java & gradle
+        uses: actions/setup-java@v1
+        with:
+          java-version: "14"
+          
+      - name: Cache gradle
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+     
+      - name: Build FAT jar
+        run: ./gradlew shadowJar
+
+      - name: Transfer files to digital ocean
+        uses: cross-the-world/scp-pipeline@v1.2.1
+        with:
+          host: ${{ secrets.DIGITAL_OCEAN_HOST }}
+          user: ${{ secrets.DIGITAL_OCEAN_USER }}
+          pass: ${{ secrets.DIGITAL_OCEAN_PASSWORD }}
+          scp: |
+            "build/libs/backend-*-all.jar" => "/var/www/fuel_hunter/config/"
+            "build/generated/source/proto/main/descriptor_set.desc" => "/var/www/fuel_hunter/config/"
+            "deploy/*" => "/var/www/fuel_hunter/config/"
+
+      - name: Build & launch fresh container
+        uses: cross-the-world/ssh-pipeline@v1.2.0
+        with: 
+          host: ${{ secrets.DIGITAL_OCEAN_HOST }}
+          user: ${{ secrets.DIGITAL_OCEAN_USER }}
+          pass: ${{ secrets.DIGITAL_OCEAN_PASSWORD }}
+          script: |
+            cd /var/www/fuel_hunter/config/
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+
+
+        

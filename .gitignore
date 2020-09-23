@@ -1,4 +1,5 @@
 .gradle
 .idea
 .mongo
+.secrets
 build

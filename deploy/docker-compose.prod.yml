@@ -4,6 +4,10 @@ services:
   fuel-hunter-mongo:
     volumes:
       - "/.mongo/data:/data/db"
+  fuel-hunter:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
   fuel-hunter-envoy:
     volumes:
     - "/var/www/fuel_hunter/config/descriptor_set.desc:/data/descriptor_set.desc"
