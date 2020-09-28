@@ -1,14 +1,12 @@
 package fuel.hunter.service
 
 import com.mongodb.reactivestreams.client.MongoClient
-import fuel.hunter.models.Price
 import fuel.hunter.repo.Price2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.bson.types.ObjectId
-import org.litote.kmongo.coroutine.coroutine
+import kotlinx.coroutines.reactive.awaitFirst
 
 @ExperimentalCoroutinesApi
 fun CoroutineScope.launchStorage(
@@ -16,9 +14,8 @@ fun CoroutineScope.launchStorage(
     dbClient: MongoClient
 ) = launch {
     val collection = dbClient
-        .coroutine
         .getDatabase("fuel-hunter")
-        .getCollection<Price2>("prices")
+        .getCollection("prices", Price2::class.java)
 
     input
         .onStart { println("[STORAGE] Started...") }
@@ -27,7 +24,7 @@ fun CoroutineScope.launchStorage(
             chunk
                 .windowed(500, 500, true)
                 .onEach {
-                    val result = collection.insertMany(it)
+                    val result = collection.insertMany(it).awaitFirst()
 
                     println("[STORAGE] Saved prices batch - amount: ${result.insertedIds.size}")
                 }
@@ -35,5 +32,3 @@ fun CoroutineScope.launchStorage(
         .onCompletion { println("[STORAGE] Closed") }
         .collect()
 }
-
-fun Price.withGeneratedId(): Price = toBuilder().setId(ObjectId.get().toHexString()).build()

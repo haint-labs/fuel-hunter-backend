@@ -5,8 +5,11 @@ import com.mongodb.client.model.Aggregates.*
 import com.mongodb.client.model.Filters.`in`
 import com.mongodb.client.model.Filters.and
 import com.mongodb.reactivestreams.client.MongoClient
+import fuel.hunter.models.Company
 import fuel.hunter.models.Price
+import fuel.hunter.models.Price2
 import fuel.hunter.models.Station
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirst
@@ -17,6 +20,8 @@ interface Repository {
     suspend fun saveSession(session: Session)
 
     suspend fun getStations(): List<Station>
+
+    suspend fun getCompanies(): List<Company>
 
     suspend fun getPrices(query: Price.Query): List<Price.Response.Item>
 }
@@ -40,6 +45,14 @@ class MongoRepository(
             .asFlow()
             .toList()
             .map(Station2::fromEntity)
+    }
+
+    override suspend fun getCompanies(): List<Company> {
+        return db.getCollection("companies", Company2::class.java)
+            .find()
+            .asFlow()
+            .toList()
+            .map(Company2::fromEntity)
     }
 
     override suspend fun getPrices(query: Price.Query): List<Price.Response.Item> {
@@ -116,8 +129,22 @@ class MongoRepository(
         return dbClient
             .getDatabase("fuel-hunter")
             .getCollection("stations")
-            .aggregate(pipe, Price.Response.Item::class.java)
+            .aggregate(pipe)
             .asFlow()
+            .map {
+                val prices = it.getList("prices", Document::class.java)
+                    .map { price ->
+                        Price2.newBuilder()
+                            .setPrice(price.getDouble("price").toFloat())
+                            .setType(Price.FuelType.valueOf(price.getString("type")))
+                            .build()
+                    }
+
+                Price.Response.Item.newBuilder()
+                    .setStationId(it.getString("stationId"))
+                    .addAllPrices(prices)
+                    .build()
+            }
             .toList()
     }
 }

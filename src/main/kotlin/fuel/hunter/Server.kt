@@ -14,7 +14,6 @@ import fuel.hunter.scrapers.impl.LaaczScraper
 import fuel.hunter.scrapers.impl.NesteScraper
 import fuel.hunter.service.launchScrappers
 import fuel.hunter.service.launchStorage
-import io.github.gaplotech.PBCodecProvider
 import io.grpc.ServerBuilder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -37,9 +36,6 @@ fun main(args: Array<String>) {
         .applyConnectionString(ConnectionString(config.database))
         .codecRegistry(
             CodecRegistries.fromRegistries(
-                CodecRegistries.fromProviders(
-                    PBCodecProvider(preservingProtoFieldNames = false)
-                ),
                 MongoClients.getDefaultCodecRegistry()
             )
         )

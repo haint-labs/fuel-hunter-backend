@@ -30,6 +30,10 @@ repositories {
     mavenLocal()
 }
 
+val grpcVersion = "1.32.1"
+val protoVersion = "3.13.0"
+val grpcKtVersion = "0.2.0"
+
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("stdlib-jdk8"))
@@ -37,32 +41,31 @@ dependencies {
 
     implementation("org.jsoup:jsoup:1.13.1")
 
-    implementation("com.google.protobuf:protobuf-java:3.13.0")
-    implementation("io.grpc:grpc-netty-shaded:1.32.1")
-    implementation("io.grpc:grpc-protobuf:1.32.1")
-    implementation("io.grpc:grpc-stub:1.32.1")
-    implementation("io.grpc:grpc-kotlin-stub:0.2.0")
+    implementation("com.google.protobuf:protobuf-java-util:$protoVersion")
+    implementation("io.grpc:grpc-netty-shaded:$grpcVersion")
+    implementation("io.grpc:grpc-protobuf:$grpcVersion")
+    implementation("io.grpc:grpc-stub:$grpcVersion")
+    implementation("io.grpc:grpc-kotlin-stub:$grpcKtVersion")
 
     implementation("javax.annotation:javax.annotation-api:1.3.2")
 
     implementation("org.litote.kmongo:kmongo-coroutine-native:4.1.1")
-    implementation("io.github.gaplotech:kotlin-protobuf-bson-codec:0.3.0")
 
     protobuf("com.github.haint-labs:fuel-hunter-proto:17d21ee2")
 }
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.13.0"
+        artifact = "com.google.protobuf:protoc:$protoVersion"
     }
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.32.1"
+            artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
         }
 
         id("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:0.2.0:jdk7@jar"
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKtVersion:jdk7@jar"
         }
     }
 

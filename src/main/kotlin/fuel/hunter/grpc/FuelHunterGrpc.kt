@@ -5,11 +5,11 @@ import fuel.hunter.FuelHunterServiceGrpcKt.FuelHunterServiceCoroutineImplBase
 import fuel.hunter.models.Company
 import fuel.hunter.models.Price
 import fuel.hunter.models.Station
+import fuel.hunter.repo.Company2
 import fuel.hunter.repo.Repository
 import fuel.hunter.repo.Station2
 import fuel.hunter.repo.toEntity
 import fuel.hunter.shared.Update
-import kotlinx.coroutines.flow.toList
 import org.litote.kmongo.coroutine.coroutine
 
 class FuelHunterGrpc(
@@ -53,26 +53,20 @@ class FuelHunterGrpc(
     }
 
     override suspend fun getCompanies(request: Company.Query): Company.Response {
-        val companies = db
-            .getCollection<Company>("companies")
-            .find()
-            .toFlow()
-            .toList()
-
         return Company.Response
             .newBuilder()
-            .addAllCompanies(companies)
+            .addAllCompanies(repo.getCompanies())
             .build()
     }
 
     override suspend fun updateCompanies(request: Company.UpdateRequest): Update.Response {
         val collection = db
-            .getCollection<Company>("companies")
+            .getCollection<Company2>("companies")
 
         val count = with(collection) {
             deleteMany()
 
-            insertMany(request.companiesList)
+            insertMany(request.companiesList.map(Company::toEntity))
                 .insertedIds
                 .size
         }
