@@ -8,6 +8,8 @@ services:
       - "/.mongo/data:/data/db"
 
   fuel-hunter:
+    env_file:
+      - "/var/www/fuel_hunter/config/.env.prod"
     build:
       context: ./
       dockerfile: ./Dockerfile
