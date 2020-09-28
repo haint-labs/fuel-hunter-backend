@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  fuel-hunter-mongo:
+    env_file:
+      - ../.env.local
+    ports:
+      - 27017:27017
+    volumes:
+      - ../.mongo/data:/data/db
+
+  fuel-hunter:
+    build:
+      context: ../
+      dockerfile: ./deploy/Dockerfile
+
+  fuel-hunter-envoy:
+    volumes:
+    - "../build/generated/source/proto/main/descriptor_set.desc:/data/descriptor_set.desc"
+    - "../deploy/envoy/config.mac.yml:/etc/envoy/envoy.yaml:ro"

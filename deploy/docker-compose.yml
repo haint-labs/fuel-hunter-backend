@@ -4,17 +4,8 @@ services:
   fuel-hunter-mongo:
     image: mongo:latest
     container_name: fuel-hunter-mongo
-    ports:
-      - 27017:27017
-    environment:
-      - MONGO_INITDB_DATABASE=fuel-hunter
-    volumes:
-    - ../.mongo/data:/data/db
 
   fuel-hunter:
-    build:
-      context: ../
-      dockerfile: ./deploy/Dockerfile
     container_name: fuel-hunter
     ports:
       - 50051:50051
@@ -31,6 +22,3 @@ services:
     ports:
     - 9901:9901
     - 8000:8000
-    volumes:
-    - "../build/generated/source/proto/main/descriptor_set.desc:/data/descriptor_set.desc"
-    - "../deploy/envoy/config.mac.yml:/etc/envoy/envoy.yaml:ro"

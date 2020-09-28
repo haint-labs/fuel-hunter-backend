@@ -2,6 +2,7 @@ package fuel.hunter
 
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
+import com.mongodb.MongoCredential
 import com.mongodb.reactivestreams.client.MongoClients
 import fuel.hunter.grpc.FuelHunterGrpc
 import fuel.hunter.models.Price
@@ -33,6 +34,13 @@ fun main(args: Array<String>) {
 
     val dbSettings = MongoClientSettings
         .builder()
+        .credential(
+            MongoCredential.createCredential(
+                System.getenv("MONGO_INITDB_ROOT_USERNAME"),
+                "admin",
+                System.getenv("MONGO_INITDB_ROOT_PASSWORD").toCharArray(),
+            )
+        )
         .applyConnectionString(ConnectionString(config.database))
         .codecRegistry(
             CodecRegistries.fromRegistries(

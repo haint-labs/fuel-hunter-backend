@@ -3,3 +3,4 @@
 .mongo
 .secrets
 build
+.env*
