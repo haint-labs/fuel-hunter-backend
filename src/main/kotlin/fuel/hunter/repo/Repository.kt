@@ -93,14 +93,14 @@ class MongoRepository(
         // join with prices
         pipe += lookup("prices", "_id", "stationId", "prices")
 
+        // flat map
+        pipe += unwind("\$prices")
+
         // filter scrapping session
         pipe += match(
             BsonDocument()
                 .append("prices.sessionId", BsonString(lastSession.id))
         )
-
-        // flat map
-        pipe += unwind("\$prices")
 
         // filter fuel types
         if (query.typeCount > 0) {
