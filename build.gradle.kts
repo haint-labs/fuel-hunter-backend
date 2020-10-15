@@ -51,7 +51,7 @@ dependencies {
 
     implementation("org.litote.kmongo:kmongo-coroutine-native:4.1.1")
 
-    protobuf("com.github.haint-labs:fuel-hunter-proto:17d21ee2")
+    protobuf("com.github.haint-labs:fuel-hunter-proto:5aabe769")
 }
 
 protobuf {

@@ -1,14 +1,17 @@
 package fuel.hunter.repo
 
 import com.mongodb.client.model.Accumulators.addToSet
+import com.mongodb.client.model.Accumulators.push
 import com.mongodb.client.model.Aggregates.*
 import com.mongodb.client.model.Filters.`in`
 import com.mongodb.client.model.Filters.and
 import com.mongodb.reactivestreams.client.MongoClient
 import fuel.hunter.models.Company
 import fuel.hunter.models.Price
-import fuel.hunter.models.Price2
 import fuel.hunter.models.Station
+import fuel.hunter.tools.bson
+import fuel.hunter.tools.geoNear
+import fuel.hunter.tools.round
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
@@ -58,7 +61,7 @@ class MongoRepository(
     override suspend fun getPrices(query: Price.Query): List<Price.Response.Item> {
         val lastSession = db.getCollection("sessions", Session::class.java)
             .find()
-            .sort(BsonDocument().append("timestamp", BsonInt32(-1)))
+            .sort(bson("timestamp" to -1))
             .limit(1)
             .awaitFirst()
 
@@ -98,8 +101,7 @@ class MongoRepository(
 
         // filter scrapping session
         pipe += match(
-            BsonDocument()
-                .append("prices.sessionId", BsonString(lastSession.id))
+            bson("prices.sessionId" to lastSession.id)
         )
 
         // filter fuel types
@@ -107,23 +109,41 @@ class MongoRepository(
             pipe += match(`in`("prices.type", query.typeList))
         }
 
-        // group by stations
+        // group by type, price and company
         pipe += group(
-            "\$_id",
-            addToSet(
+            bson(
+                "type" to "\$prices.type",
+                "price" to round("\$prices.price", 3),
+                "company" to "\$company"
+            ),
+            addToSet("stations", "\$_id")
+        )
+
+        // sort by price
+        pipe += sort(
+            bson("_id.price" to 1)
+        )
+
+        // group type
+        pipe += group(
+            bson("type" to "\$_id.type"),
+            push(
                 "prices",
-                BsonDocument()
-                    .append("price", round("\$prices.price", 3))
-                    .append("type", BsonString("\$prices.type"))
+                bson(
+                    "price" to "\$_id.price",
+                    "company" to "\$_id.company",
+                    "stations" to "\$stations",
+                )
             )
         )
 
         // reshape
         pipe += project(
-            BsonDocument()
-                .append("_id", BsonBoolean(false))
-                .append("stationId", BsonString("\$_id"))
-                .append("prices", BsonBoolean(true))
+            bson(
+                "_id" to false,
+                "type" to "\$_id.type",
+                "prices" to true,
+            )
         )
 
         return dbClient
@@ -131,54 +151,22 @@ class MongoRepository(
             .getCollection("stations")
             .aggregate(pipe)
             .asFlow()
-            .map {
-                val prices = it.getList("prices", Document::class.java)
-                    .map { price ->
-                        Price2.newBuilder()
-                            .setPrice(price.getDouble("price").toFloat())
-                            .setType(Price.FuelType.valueOf(price.getString("type")))
+            .map { item ->
+                val fuelType = Price.FuelType.valueOf(item.getString("type"))
+                val prices = item.getList("prices", Document::class.java)
+                    .map {
+                        Price.Response.CompanyPriceGrouped.newBuilder()
+                            .setCompany(it.getString("company"))
+                            .setPrice(it.getDouble("price").toFloat())
+                            .addAllStations(it.getList("stations", String::class.java))
                             .build()
                     }
 
                 Price.Response.Item.newBuilder()
-                    .setStationId(it.getString("stationId"))
+                    .setType(fuelType)
                     .addAllPrices(prices)
                     .build()
             }
             .toList()
     }
-}
-
-fun geoNear(
-    near: List<Float>,
-    maxDistance: Float,
-    key: String,
-    distanceField: String = "distance",
-    spherical: Boolean = true
-): Bson {
-    val coordinates = near
-        .map(Float::toDouble)
-        .map(::BsonDouble)
-
-    val point = BsonDocument()
-        .append("type", BsonString("Point"))
-        .append("coordinates", BsonArray(coordinates))
-
-    val params = BsonDocument()
-        .append("near", point)
-        .append("key", BsonString(key))
-        .append("maxDistance", BsonDouble(maxDistance.toDouble()))
-        .append("distanceField", BsonString(distanceField))
-        .append("spherical", BsonBoolean(spherical))
-
-    return BsonDocument("\$geoNear", params)
-}
-
-fun round(field: String, place: Int): BsonDocument {
-    val params = BsonArray().apply {
-        add(BsonString(field))
-        add(BsonInt32(place))
-    }
-
-    return BsonDocument("\$round", params)
 }
