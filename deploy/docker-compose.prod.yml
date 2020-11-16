@@ -17,4 +17,4 @@ services:
   fuel-hunter-envoy:
     volumes:
     - "/var/www/fuel_hunter/config/descriptor_set.desc:/data/descriptor_set.desc"
-    - "/var/www/fuel_hunter/config/config.linux.yml:/etc/envoy/envoy.yaml:ro"
+    - "/var/www/fuel_hunter/config/envoy/config.linux.yml:/etc/envoy/envoy.yaml:ro"
