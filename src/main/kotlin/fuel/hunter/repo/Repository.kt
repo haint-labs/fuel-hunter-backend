@@ -94,7 +94,11 @@ class MongoRepository(
             ?.let { pipe += match(and(it)) }
 
         // join with prices
-        pipe += lookup("prices", "_id", "stationId", "prices")
+        pipe += lookup(
+            "prices",
+            listOf(match(bson("sessionId" to lastSession.id))),
+            "prices"
+        )
 
         // flat map
         pipe += unwind("\$prices")
