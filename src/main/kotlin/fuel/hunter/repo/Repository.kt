@@ -3,8 +3,8 @@ package fuel.hunter.repo
 import com.mongodb.client.model.Accumulators.addToSet
 import com.mongodb.client.model.Accumulators.push
 import com.mongodb.client.model.Aggregates.*
-import com.mongodb.client.model.Filters.`in`
-import com.mongodb.client.model.Filters.and
+import com.mongodb.client.model.Filters.*
+import com.mongodb.client.model.Variable
 import com.mongodb.reactivestreams.client.MongoClient
 import fuel.hunter.models.Company
 import fuel.hunter.models.Price
@@ -16,7 +16,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirst
-import org.bson.*
+import org.bson.BsonArray
+import org.bson.BsonString
+import org.bson.Document
 import org.bson.conversions.Bson
 
 interface Repository {
@@ -93,25 +95,49 @@ class MongoRepository(
             .takeIf { it.isNotEmpty() }
             ?.let { pipe += match(and(it)) }
 
+        val pricesFilters = mutableListOf(
+            bson(
+                "\$eq" to BsonArray(listOf(
+                    BsonString("\$stationId"),
+                    BsonString("\$\$targetStationId"),
+                ))
+            ),
+            bson(
+                "\$eq" to BsonArray(
+                    listOf(
+                        BsonString("\$sessionId"),
+                        BsonString(lastSession.id)
+                    )
+                )
+            ),
+        )
+
+        // filter fuel types
+        if (query.typeCount > 0) {
+            pricesFilters += bson(
+                "\$in" to BsonArray(
+                    listOf(
+                        BsonString("\$type"),
+                        BsonArray(query.typeList.map { BsonString(it) })
+                    )
+                )
+            )
+        }
+
         // join with prices
         pipe += lookup(
             "prices",
-            listOf(match(bson("sessionId" to lastSession.id))),
+            listOf(
+                Variable("targetStationId", "\$_id")
+            ),
+            listOf(
+                match(expr(and(pricesFilters)))
+            ),
             "prices"
         )
 
         // flat map
         pipe += unwind("\$prices")
-
-        // filter scrapping session
-        pipe += match(
-            bson("prices.sessionId" to lastSession.id)
-        )
-
-        // filter fuel types
-        if (query.typeCount > 0) {
-            pipe += match(`in`("prices.type", query.typeList))
-        }
 
         // group by type, price and company
         pipe += group(
